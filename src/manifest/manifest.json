@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
-  "id": "37be7460-4919-11ea-b8e1-770228c348af",
+  "id": "37be7460-4919-11ea-b8e1-770228c348af", 
   "version": "0.0.3",
   "packageName": "teamspillagerbot",
   "developer": {

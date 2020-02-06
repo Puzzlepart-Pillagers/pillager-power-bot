@@ -1,4 +1,4 @@
-import { BotDeclaration, MessageExtensionDeclaration, IBot, PreventIframe } from "express-msteams-host";
+import { BotDeclaration, IBot } from "express-msteams-host";
 import * as debug from "debug";
 import { DialogSet, DialogState } from "botbuilder-dialogs";
 import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes } from "botbuilder";
@@ -16,7 +16,8 @@ const log = debug("msteams");
     "/api/messages",
     new MemoryStorage(),
     process.env.MICROSOFT_APP_ID,
-    process.env.MICROSOFT_APP_PASSWORD)
+    process.env.MICROSOFT_APP_PASSWORD
+)
 
 export class PowerPillager implements IBot {
     private readonly conversationState: ConversationState;
