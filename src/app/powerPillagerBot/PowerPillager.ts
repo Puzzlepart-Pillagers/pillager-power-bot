@@ -43,28 +43,26 @@ export class PowerPillager implements IBot {
                 // get the Microsoft Teams context, will be undefined if not in Microsoft Teams
                 const teamsContext: TeamsContext = TeamsContext.from(context);
 
-                /**
-                 * Headers
-                 */
-                const headers: Headers = new Headers();
-                headers.append("Content-Type", "application/json");
-
-                // TODO: add your own bot logic in here
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
                         const text = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
 
+                        const headers: Headers = new Headers();
+                        headers.append("Content-Type", "application/json");
+
+                        // tslint:disable-next-line: no-console
+                        console.log("text", text);
+
                         switch (true) {
                             case text.startsWith("get stats"): {
-                                const user: string = context.activity.from.id;
-                                const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${user}`, { headers, method: "GET" });
-                                // tslint:disable-next-line: no-console
-                                console.log("response", response);
-                                await context.sendActivity(`Hello ${context.activity.from.name}`);
+                                // const user: string = context.activity.from.id;
+                                // const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${user}`, { headers, method: "GET" });
+                                // console.log("response", response);
+                                await context.sendActivity(`Hello`);
                                 break;
                             }
                             case text.startsWith("hello"): {
-                                await context.sendActivity(`Hello ${context.activity.from.name}`);
+                                await context.sendActivity(`Hello`);
                                 break;
                             }
                             case text.startsWith("help"): {
