@@ -43,37 +43,21 @@ export class PowerPillager implements IBot {
                 // get the Microsoft Teams context, will be undefined if not in Microsoft Teams
                 const teamsContext: TeamsContext = TeamsContext.from(context);
 
+                // TODO: add your own bot logic in here
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        const text = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
+                        const text = teamsContext ?
+                            teamsContext.getActivityTextWithoutMentions().toLowerCase() :
+                            context.activity.text;
 
-                        const headers: Headers = new Headers();
-                        headers.append("Content-Type", "application/json");
-
-                        // tslint:disable-next-line: no-console
-                        console.log("text", text);
-
-                        switch (true) {
-                            case text.startsWith("get stats"): {
-                                // const user: string = context.activity.from.id;
-                                // const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${user}`, { headers, method: "GET" });
-                                // console.log("response", response);
-                                await context.sendActivity(`Hello`);
-                                break;
-                            }
-                            case text.startsWith("hello"): {
-                                await context.sendActivity(`Hello`);
-                                break;
-                            }
-                            case text.startsWith("help"): {
-                                const dc = await this.dialogs.createContext(context);
-                                await dc.beginDialog("help");
-                                break;
-                            }
-                            default: {
-                                await context.sendActivity(`I\'m terribly sorry, but my master hasn\'t trained me to do anything yet...`);
-                                break;
-                            }
+                        if (text.startsWith("hello")) {
+                            await context.sendActivity("Oh, hello to you as well!");
+                            return;
+                        }  else if (text.startsWith("help")) {
+                            const dc = await this.dialogs.createContext(context);
+                            await dc.beginDialog("help");
+                        } else {
+                            await context.sendActivity(`I\'m terribly sorry, but my master hasn\'t trained me to do anything yet...`);
                         }
                         break;
                     default:
