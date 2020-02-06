@@ -35,10 +35,12 @@ export class PowerPillager implements IBot {
         this.dialogs = new DialogSet(this.dialogState);
         this.dialogs.add(new HelpDialog("help"));
 
-        // tslint:disable-next-line: no-console
-        console.log("################################ IM RUNNING");
-
         // Set up the Activity processing
+
+        // tslint:disable-next-line: no-console
+        console.log("", process.env.MICROSOFT_APP_ID);
+        // tslint:disable-next-line: no-console
+        console.log("", process.env.MICROSOFT_APP_PASSWORD);
 
         this.activityProc.messageActivityHandler = {
             // Incoming messages
