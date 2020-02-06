@@ -37,32 +37,45 @@ export class PowerPillager implements IBot {
 
         // Set up the Activity processing
 
-        // tslint:disable-next-line: no-console
-        console.log("", process.env.MICROSOFT_APP_ID);
-        // tslint:disable-next-line: no-console
-        console.log("", process.env.MICROSOFT_APP_PASSWORD);
-
         this.activityProc.messageActivityHandler = {
             // Incoming messages
             onMessage: async (context: TurnContext): Promise<void> => {
                 // get the Microsoft Teams context, will be undefined if not in Microsoft Teams
                 const teamsContext: TeamsContext = TeamsContext.from(context);
 
+                /**
+                 * Headers
+                 */
+                const headers: Headers = new Headers();
+                headers.append("Content-Type", "application/json");
+
                 // TODO: add your own bot logic in here
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        const text = teamsContext ?
-                            teamsContext.getActivityTextWithoutMentions().toLowerCase() :
-                            context.activity.text;
+                        const text = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
 
-                        if (text.startsWith("hello")) {
-                            await context.sendActivity("Oh, hello to you as well!");
-                            return;
-                        }  else if (text.startsWith("help")) {
-                            const dc = await this.dialogs.createContext(context);
-                            await dc.beginDialog("help");
-                        } else {
-                            await context.sendActivity(`I\'m terribly sorry, but my master hasn\'t trained me to do anything yet...`);
+                        switch (true) {
+                            case text.startsWith("get stats"): {
+                                const user: string = context.activity.from.id;
+                                const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${user}`, { headers, method: "GET" });
+                                // tslint:disable-next-line: no-console
+                                console.log("response", response);
+                                await context.sendActivity(`Hello ${context.activity.from.name}`);
+                                break;
+                            }
+                            case text.startsWith("hello"): {
+                                await context.sendActivity(`Hello ${context.activity.from.name}`);
+                                break;
+                            }
+                            case text.startsWith("help"): {
+                                const dc = await this.dialogs.createContext(context);
+                                await dc.beginDialog("help");
+                                break;
+                            }
+                            default: {
+                                await context.sendActivity(`I\'m terribly sorry, but my master hasn\'t trained me to do anything yet...`);
+                                break;
+                            }
                         }
                         break;
                     default:
