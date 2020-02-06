@@ -1,0 +1,11 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "Puzzle Pillagers",
+      "unitTestsEnabled": false,
+      "useAzureAppInsights": false
+    },
+    "libraryName": "teamsPillagerBot",
+    "generator-version": "2.11.1"
+  }
+}
