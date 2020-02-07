@@ -54,29 +54,29 @@ export class PowerPillager implements IBot {
                             const king = kings.value[0];
                             let adaptiveCard = new AdaptiveCard.AdaptiveCard();
                             const card = {
-                                type: 'message',
-                                attachments: [
-                                    {
-                                        contentType: 'application/vnd.microsoft.card.adaptive',
-                                        content: {
-                                            type: 'AdaptiveCard',
-                                            version: '1.0',
-                                            body: [
-                                                { type: 'xml', text: '<b>King</b>' },
-                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
-                                            ],
-                                            actions: [
-                                                { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' }
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
+                                contentType: 'application/vnd.microsoft.card.adaptive',
+                                content: {
+                                    type: 'AdaptiveCard',
+                                    version: '1.0',
+                                    body: [
+                                        { type: 'xml', text: '<b>King</b>' },
+                                        { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
+                                        { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
+                                    ],
+                                    actions: [
+                                        { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' }
+                                    ]
+                                }
+                            };
+
                             adaptiveCard.onExecuteAction = (action) => { alert(`action ${action.title} executed`); }
                             adaptiveCard.parse(card);
 
-                            await context.sendActivity(adaptiveCard);
+                            console.log('### card to json:', adaptiveCard.toJSON());
+                            await context.sendActivity({
+                                type: 'message',
+                                attachments: [ adaptiveCard.toJSON() ]
+                            });
                         } catch(e) {
                             console.error('### error:', e);
                         }
