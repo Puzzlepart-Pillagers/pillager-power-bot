@@ -41,17 +41,17 @@ export class PowerPillager implements IBot {
                         const conversationMembers = await adapter.getConversationMembers(context);
                         const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
                         const sender: TeamsChannelAccount = members[0];
-
-                        if (text.startsWith("get king")) {
+                        if (text.startsWith("stats")) {
                             if (sender) {
                                 try {
-                                    const responseValue = (await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=kim@pzl.onmicrosoft.com`)).value;
-                                    console.log(responseValue);
-                                    if (responseValue === []) {
+                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
+                                    const value = response['value'][0];
+                                    console.log(value);
+                                    if (value === [] || !value) {
                                         await context.sendActivity(`Cannot find user`);
                                         return;
                                     }
-                                    await context.sendActivity(`stats for ${responseValue[0]['RowKey']}: <b>Penning:</b>`);
+                                    await context.sendActivity(`stats for ${value['RowKey']}: <b>Penning:</b>`);
                                     return;
                                 } catch(e) {
                                     console.error(e);
