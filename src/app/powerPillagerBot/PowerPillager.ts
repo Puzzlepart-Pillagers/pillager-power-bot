@@ -23,45 +23,46 @@ export class PowerPillager implements IBot {
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
     
-    private commands: string[] = [ 'king', 'me', 'help' ];
+    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
         let args: string[] = text.trim().split(' ');
         const command: string = args[0].toLocaleLowerCase();
         if (this.commands.indexOf(command) !== -1) {
             switch(command) {
                 case 'me':
+                case 'stats':
                 case 'king': {
                     let request = { email: sender.email };
                     if (args.indexOf('--user') !== -1) {
-                        const value = args[args.indexOf('--user') + 1]
-                        if (value) request.email = value;
+                        const arg = args[args.indexOf('--user') + 1]
+                        if (arg) request.email = arg;
                     }
 
-                    let response = [];
-                    let value;
+                    let kings: any;
                     try {
-                        response = await fetch(
-                            `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, 
+                        const response = await fetch(
+                            `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`,
                             { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
                         );
-                        value = await (response as any).json();
-                        console.log('### value', value);
+                        kings = await (response as any).json();
+                        console.log('### value', kings);
                     } catch(e) {
-                        console.error(e);
+                        console.error('### error:', e);
                     }
 
-                    if (value[0]) {
-                        const king = value[0];
-                        await context.sendActivity({ 
-                            textFormat: 'xml', 
-                            text: `<b>King: ${king.firstName} ${king.lastName}</b>`
-                        });
-                        return;
+                    if (kings[0]) {
+                        try {
+                            const king = kings[0];
+                            await context.sendActivity(`<b>King:</b> ${king.firstName} ${king.lastName}, has ${king.Penning} Pennings.`);
+                        } catch(e) {
+                            console.error('### error:', e);
+                        }
+                    } else {
+                        await context.sendActivity(`Cannot find a user registred with: ${request.email}, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
                     }
-
-                    await context.sendActivity(`Cannot find a user registred with: ${request.email}, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
                     return;
                 }
+                case 'man':
                 case 'help': {
                     const dc = await this.dialogs.createContext(context);
                     await dc.beginDialog("help");
