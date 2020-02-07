@@ -15,13 +15,12 @@ const got = require('got');
     process.env.MICROSOFT_APP_ID,
     process.env.MICROSOFT_APP_PASSWORD
 )
-
 export class PowerPillager implements IBot {
     private readonly conversationState: ConversationState;
     private readonly dialogs: DialogSet;
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
-    private emailRegex: RegExp = new RegExp('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/');
+    //private emailRegex: RegExp = new RegExp('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/');
 
     public constructor(conversationState: ConversationState) {
         this.conversationState = conversationState;
@@ -37,42 +36,33 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
                         const adapter = (context.adapter as TeamsAdapter);
-                        const activityMembers = await adapter.getActivityMembers(context);
-                        const conversationMembers = await adapter.getConversationMembers(context);
-                        const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
-                        const sender: TeamsChannelAccount = members[0];
-                        if (text.startsWith("stats")) {
-                            if (sender) {
-                                try {
+                        const sender: TeamsChannelAccount = await this.getSenderInformation(adapter, context);
+                        
+                        switch(text) {
+                            case 'me': {
+                                if (sender) {
                                     const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
-                                    const value = response['value'][0];
-                                    console.log(value);
-                                    if (value === [] || !value) {
-                                        await context.sendActivity(`Cannot find user`);
-                                        return;
+                                    console.log(response);
+                                    const me = response.value[0];
+                                    console.log(me);
+                                    if (me) {
+                                        await context.sendActivity(`<pre>${JSON.stringify(me, null, 2)}<pre/>`);
                                     }
-                                    await context.sendActivity(`stats for ${value['RowKey']}: <b>Penning:</b>`);
-                                    return;
-                                } catch(e) {
-                                    console.error(e);
+
                                     return;
                                 }
+                                await context.sendActivity(`Cannot VIPPS user: <b>email:</b> ${sender.email}, <b>name:</b> ${sender.name} `);
+                                return;
                             }
-                            // else - cannot find user
-                            await context.sendActivity(`Cannot find user`);
-                            return;
-                        } else if (text.startsWith('members')) {
-                            const members = await (context.adapter as TeamsAdapter).getActivityMembers(context);
-                            const convMembers = await (context.adapter as TeamsAdapter).getConversationMembers(context);
-                            await context.sendActivity({ textFormat: 'xml', text: `<b>Activity members:</b><pre>${JSON.stringify(members, null, 2)}</pre><b>Conversation members:</b><pre>${JSON.stringify(convMembers, null, 2)}</pre>` });
-                            return;
-                        } else if (text.startsWith("help")) {
-                            const dc = await this.dialogs.createContext(context);
-                            await dc.beginDialog("help");
-                        } else {
-                            await context.sendActivity(`I\'m terribly sorry, but my master hasn\'t trained me to do anything yet...`);
+                            case 'help': {
+                                const dc = await this.dialogs.createContext(context);
+                                await dc.beginDialog("help");
+                                return;
+                            }
+                            default: {
+                                await context.sendActivity(`I'm sorry, but i don't know what \'${text}\' means.`);
+                            }
                         }
-                        break;
                     default:
                         break;
                 }
@@ -106,6 +96,21 @@ export class PowerPillager implements IBot {
                 }
             }
         };
+   }
+
+   private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
+       const activityMembers: TeamsChannelAccount[] = await adapter.getActivityMembers(context);
+       let conversationMembers: TeamsChannelAccount[] = [];
+       if (!activityMembers) {
+        conversationMembers = await adapter.getConversationMembers(context);
+       }
+
+       const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
+       if (members[0]) {
+        return members[0] as TeamsChannelAccount;
+       }
+
+       return null;
    }
 
    public async onTurn(context: TurnContext): Promise<any> {
