@@ -46,7 +46,7 @@ export class PowerPillager implements IBot {
                             if (sender) {
                                 try {
                                     const response = (await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${'kim@pzl.onmicrosoft.com'}`)).body.value;
-
+                                    console.log(response);
                                     if (response === []) {
                                         await context.sendActivity(`Cannot find user`);
                                         return;
