@@ -45,6 +45,7 @@ export class PowerPillager implements IBot {
                             { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
                         );
                         value = await (response as any).json();
+                        console.log('### value', value);
                     } catch(e) {
                         console.error(e);
                     }
@@ -58,7 +59,7 @@ export class PowerPillager implements IBot {
                         return;
                     }
 
-                    await context.sendActivity(`Error - could not find a user with the email: ${request.email}`)
+                    await context.sendActivity(`Cannot find a user registred with: ${request.email}, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
                     return;
                 }
                 case 'help': {
