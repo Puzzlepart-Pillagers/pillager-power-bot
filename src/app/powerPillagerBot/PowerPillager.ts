@@ -4,6 +4,7 @@ import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, Convers
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
+import { TeamsChannelData } from "botbuilder-teams/lib/schema/models/mappers";
 const fetch = require('node-fetch');
 
 /**
@@ -54,6 +55,12 @@ export class PowerPillager implements IBot {
                             const king = kings.value[0];
                             await context.sendActivity({
                                 type: 'message',
+                                value: {
+                                    user: king.Email
+                                },
+                                channelData: {
+                                    user: king.Email
+                                },
                                 attachments: [
                                     {
                                         contentType: 'application/vnd.microsoft.card.adaptive',
@@ -63,7 +70,7 @@ export class PowerPillager implements IBot {
                                             body: [
                                                 { type: 'Image', url: 'https://www.epsilontheory.com/wp-content/uploads/epsilon-theory-one-million-dollars-september-15-2015-austin-powers.jpg' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' }
+                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
                                             ],
                                             actions: [
                                                 { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: '1000000000' } }
