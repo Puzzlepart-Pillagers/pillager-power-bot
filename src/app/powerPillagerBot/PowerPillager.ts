@@ -37,13 +37,14 @@ export class PowerPillager implements IBot {
                         if (value) request.email = value;
                     }
 
-                    let value = [];
+                    let response = [];
+                    let value;
                     try {
-                        value = await (
-                            (await fetch(
-                                `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, 
-                                { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
-                            )).value).json();
+                        response = await fetch(
+                            `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, 
+                            { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
+                        );
+                        value = await (response as any).json();
                     } catch(e) {
                         console.error(e);
                     }
@@ -106,19 +107,6 @@ export class PowerPillager implements IBot {
                             await context.sendActivity({ attachments: [welcomeCard] });
                         }
                     }
-                }
-            }
-        };
-
-        // Message reactions in Microsoft Teams
-        this.activityProc.messageReactionActivityHandler = {
-            onMessageReaction: async (context: TurnContext): Promise<void> => {
-                const added = context.activity.reactionsAdded;
-                if (added && added[0]) {
-                    await context.sendActivity({
-                        textFormat: "xml",
-                        text: `That was an interesting reaction (<b>${added[0].type}</b>)`
-                    });
                 }
             }
         };
