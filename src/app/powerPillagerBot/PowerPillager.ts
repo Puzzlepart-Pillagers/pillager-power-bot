@@ -1,7 +1,7 @@
 import { BotDeclaration, IBot } from "express-msteams-host";
 import * as debug from "debug";
 import { DialogSet, DialogState } from "botbuilder-dialogs";
-import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes } from "botbuilder";
+import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor } from "botbuilder-teams";
@@ -24,34 +24,38 @@ export class PowerPillager implements IBot {
     private readonly dialogs: DialogSet;
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
+    private headers: Headers = new Headers();
+    private emailRegex: RegExp = new RegExp('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/');
 
-    /**
-     * The constructor
-     * @param conversationState
-     */
     public constructor(conversationState: ConversationState) {
         this.conversationState = conversationState;
         this.dialogState = conversationState.createProperty("dialogState");
         this.dialogs = new DialogSet(this.dialogState);
         this.dialogs.add(new HelpDialog("help"));
-
-        // Set up the Activity processing
+        this.headers.append('Content-Type', 'application/json');
 
         this.activityProc.messageActivityHandler = {
-            // Incoming messages
-            onMessage: async (context: TurnContext): Promise<void> => {
-                // get the Microsoft Teams context, will be undefined if not in Microsoft Teams
-                const teamsContext: TeamsContext = TeamsContext.from(context);
+            onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
+                const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
 
-                // TODO: add your own bot logic in here
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        const text = teamsContext ?
-                            teamsContext.getActivityTextWithoutMentions().toLowerCase() :
-                            context.activity.text;
+                        let text: string;
+                        let sender: ChannelAccount;
+                        if (teamsContext) {
+                            text = teamsContext.getActivityTextWithoutMentions().toLowerCase();
+                            sender = null
+                        } else {
+                            text = context.activity.text;
+                            sender = context.activity.from;
+                        }
 
-                        if (text.startsWith("hello")) {
-                            await context.sendActivity("Oh, hello to you as well!");
+                        if (text.startsWith("stats")) {
+                            if (sender) {
+                                await context.sendActivity(`stats: ${sender.id}`);
+                                return;
+                            }
+                            await context.sendActivity(`Cannot find user`);
                             return;
                         }  else if (text.startsWith("help")) {
                             const dc = await this.dialogs.createContext(context);
@@ -64,7 +68,6 @@ export class PowerPillager implements IBot {
                         break;
                 }
 
-                // Save state changes
                 return this.conversationState.saveChanges(context);
             }
         };
@@ -96,13 +99,7 @@ export class PowerPillager implements IBot {
         };
    }
 
-   /**
-    * The Bot Framework `onTurn` handlder.
-    * The Microsoft Teams middleware for Bot Framework uses a custom activity processor (`TeamsActivityProcessor`)
-    * which is configured in the constructor of this sample
-    */
    public async onTurn(context: TurnContext): Promise<any> {
-        // transfer the activity to the TeamsActivityProcessor
         await this.activityProc.processIncomingActivity(context);
     }
 

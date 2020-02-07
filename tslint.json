@@ -1,5 +1,4 @@
 {
-    "extends": "tslint:recommended",
     "rules": {
         "arrow-parens": false,
         "max-line-length": {
