@@ -37,14 +37,15 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
                         let sender: ChannelAccount = context.activity.from;
+                        let test = context.activity;
 
                         if (text.startsWith("stats")) {
                             if (sender) {
                                 try {
-                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`);
-                                    console.log(response);
-
-                                    await context.sendActivity(`stats for ${sender.id}:`);
+                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.name}`);
+                                    //console.log(response);
+                                    console.log('test', test);
+                                    await context.sendActivity(`stats for ${sender.name}:`);
                                     return;
                                 } catch(e) {
                                     console.error(e);
