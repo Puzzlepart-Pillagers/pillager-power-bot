@@ -128,7 +128,11 @@ export class PowerPillager implements IBot {
                             const pennings = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
                             const json = (pennings as any).json();
                             const totalPennings: number = json.Penning + value;
-                            await fetch('https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', { method: 'POST', body: { email: sender.email, Penning: totalPennings }, headers: { 'Content-Type': 'application/json' } });
+                            console.log('### total monies', totalPennings);
+                            await fetch(
+                                'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
+                                { method: 'POST', body: { email: sender.email, Penning: totalPennings }, headers: { 'Content-Type': 'application/json' } }
+                            );
                         }
                     }
                     default:
