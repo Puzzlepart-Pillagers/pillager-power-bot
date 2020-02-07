@@ -3,7 +3,7 @@ import { DialogSet, DialogState } from "botbuilder-dialogs";
 import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount, BotAdapter } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
-import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
+import { TeamsContext, TeamsActivityProcessor, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
 import * as AdaptiveCard from 'adaptivecards';
 const fetch = require('node-fetch');
 
@@ -75,7 +75,7 @@ export class PowerPillager implements IBot {
                             console.log('### card to json:', adaptiveCard.toJSON());
                             await context.sendActivity({
                                 type: 'message',
-                                attachments: [ adaptiveCard.toJSON() ]
+                                attachments: [ CardFactory.adaptiveCard(adaptiveCard) ]
                             });
                         } catch(e) {
                             console.error('### error:', e);
