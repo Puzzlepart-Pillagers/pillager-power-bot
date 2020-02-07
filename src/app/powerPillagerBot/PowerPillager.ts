@@ -25,6 +25,7 @@ export class PowerPillager implements IBot {
     private commands: string[] = [ 'king', 'me', 'help' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
         let args: string[] = text.trim().split(new RegExp('/ +/g'));
+        console.log('### args:', args);
         const command: string = args.shift().toLocaleLowerCase();
         console.log('### command:', command);
         if (this.commands.indexOf(command) !== -1) {
@@ -38,9 +39,15 @@ export class PowerPillager implements IBot {
                     }
 
                     const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`);
-                    console.log('### response.body.value:', response.body.value);
+                    console.log('### response.body.value:', response.body['value']);
+                    try {
+                        const json = JSON.parse(response);
+                        console.log('### odata to json:', json);
+                    } catch (_) {
+                        console.log('### cannot parse odata');
+                    }
  
-                    await context.sendActivity(`<pre>${sender}<pre/>`);
+                    await context.sendActivity(`<pre>${JSON.stringify(sender)}<pre/>`);
                     return;
                 }
                 case 'help': {
@@ -50,7 +57,7 @@ export class PowerPillager implements IBot {
                 }
             }
         } else {
-            await context.sendActivity(`\'${command}\' is not a valid action.`);
+            await context.sendActivity(`${command} is not a valid action.`);
             return;
         }
     }
