@@ -64,7 +64,7 @@ export class PowerPillager implements IBot {
                                             body: [
                                                 { type: 'Image', url: 'https://www.epsilontheory.com/wp-content/uploads/epsilon-theory-one-million-dollars-september-15-2015-austin-powers.jpg' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
+                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' }
                                             ],
                                             actions: [
                                                 { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: '1000000000' } }
