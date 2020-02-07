@@ -67,8 +67,8 @@ export class PowerPillager implements IBot {
                                             ],
                                             actions: [
                                                 { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' },
-                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' }  }
-                                                { type: 'invoke', title: 'invoke action', data: { monies: '1000' }  }
+                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' } },
+                                                { type: 'invoke', title: 'invoke action', data: { monies: '1000' } }
                                             ]
                                         }
                                     }
