@@ -37,21 +37,27 @@ export class PowerPillager implements IBot {
                         if (value) request.email = value;
                     }
 
-                    const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-                    console.log('### response', response);
+                    let value = [];
                     try {
-                        const json = await response.json();
-                        if (json) {
-                            console.log('### json:', json);
-                        }
+                        value = await (
+                            (await fetch(
+                                `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, 
+                                { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
+                            )).value).json();
                     } catch(e) {
-                        console.error('### error -', e);
+                        console.error(e);
                     }
 
-                    await context.sendActivity({ 
-                        textFormat: 'xml', 
-                        text: `<b>King: ${sender.name}</b>` 
-                    });
+                    if (value[0]) {
+                        const king = value[0];
+                        await context.sendActivity({ 
+                            textFormat: 'xml', 
+                            text: `<b>King: ${king.firstName} ${king.lastName}</b>`
+                        });
+                        return;
+                    }
+
+                    await context.sendActivity(`Error - could not find a user with the email: ${request.email}`)
                     return;
                 }
                 case 'help': {
