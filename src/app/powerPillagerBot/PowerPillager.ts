@@ -44,9 +44,10 @@ export class PowerPillager implements IBot {
                         if (text.startsWith("stats")) {
                             const headers: Headers = new Headers();
                             headers.append('Content-Type', 'application/json');
+                            console.log(headers);
 
                             if (sender) {
-                                const king: Response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`, { headers, method: 'GET' });
+                                const king: Response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`, { method: 'GET', headers });
                                 const json = await king.json();
                                 console.log(king);
                                 console.log(json);
