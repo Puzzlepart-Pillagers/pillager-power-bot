@@ -125,7 +125,7 @@ export class PowerPillager implements IBot {
                         let value = context.activity.value;
                         if (value) {
                             const pennings = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
-                            const json = (pennings as any).json();
+                            const json = await (pennings as any).json();
                             const totalPennings: number = json.Penning + value;
                             console.log('### json', json);
                             console.log('### total monies', totalPennings);
