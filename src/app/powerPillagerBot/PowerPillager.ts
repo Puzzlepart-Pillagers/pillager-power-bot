@@ -4,7 +4,8 @@ import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, Convers
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
-const got = require('got');
+import request = require("request");
+const fetch = require('node-fetch');
 
 /**
  * Implementation for Power Pillager
@@ -36,10 +37,15 @@ export class PowerPillager implements IBot {
                         if (value) request.email = value;
                     }
 
-                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`);
-                    const json = await response.body.json();
-                    if (json) {
-                        console.log('### json:', json);
+                    const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+                    console.log('### response', response);
+                    try {
+                        const json = await response.body.json();
+                        if (json) {
+                            console.log('### json:', json);
+                        }
+                    } catch(e) {
+                        console.error('### error -', e);
                     }
 
                     await context.sendActivity({ 
