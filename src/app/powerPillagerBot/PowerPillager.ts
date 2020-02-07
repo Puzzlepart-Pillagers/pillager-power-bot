@@ -50,6 +50,7 @@ export class PowerPillager implements IBot {
                         console.error('### error:', e);
                     }
 
+                    console.log('### kings[0]:', kings[0]);
                     if (kings[0]) {
                         try {
                             const king = kings[0];
@@ -58,7 +59,7 @@ export class PowerPillager implements IBot {
                             console.error('### error:', e);
                         }
                     } else {
-                        await context.sendActivity(`Cannot find a user registred with: ${request.email}, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
+                        await context.sendActivity(`Cannot find a user registred with: <i>${request.email}</i>, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
                     }
                     return;
                 }
