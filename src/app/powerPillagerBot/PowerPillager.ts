@@ -41,17 +41,20 @@ export class PowerPillager implements IBot {
                         switch(text) {
                             case 'me': {
                                 if (sender) {
-                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
-                                    console.log('#RESPONSE.body', response.body);
-                                    const me = response.value[0];
-                                    console.log('#ME', me);
-                                    if (me) {
-                                        await context.sendActivity(`<pre>${JSON.stringify(me, null, 2)}<pre/>`);
+                                    try {
+                                        const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
+                                        console.log('#RESPONSE.body', response.body);
+                                        if (response.value[0]) {
+                                            const me = response.value[0];
+                                            console.log('#ME', me);
+                                            await context.sendActivity(`<pre>${JSON.stringify(me, null, 2)}<pre/>`);
+                                        }
+                                    } catch(e) {
+                                        console.error(e);
                                     }
-
                                     return;
                                 }
-                                await context.sendActivity(`Cannot VIPPS user: <b>email:</b> ${sender.email}, <b>name:</b> ${sender.name} `);
+                                await context.sendActivity(`Cannot find any VIPPS user with email: ${sender.email}`);
                                 return;
                             }
                             case 'help': {
