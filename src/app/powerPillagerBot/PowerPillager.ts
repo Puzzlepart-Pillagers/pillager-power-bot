@@ -115,20 +115,24 @@ export class PowerPillager implements IBot {
                     console.error('### error (adaptiveCard):', e); 
                 }
 
+                const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
+
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        let text: string = teamsContext ? (teamsContext.getActivityTextWithoutMentions() ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text) : context.activity.text;
-                        const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
-
+                        let text: string = teamsContext ? (
+                            teamsContext.getActivityTextWithoutMentions() ? 
+                                teamsContext.getActivityTextWithoutMentions().toLowerCase() : 
+                                context.activity.text
+                        ) : context.activity.text;
                         console.log('### text', text);
-                        await this.messageHandler(text, context, sender);
+                        if (text) {
+                            await this.messageHandler(text, context, sender);
+                        }
                         console.log('### - Command finsihed');
                     case ActivityTypes.Invoke: {
-                        console.log('### - INVOKDE COMMAND EXECUTED!');
-                        if (context.activity.value) {
-                            console.log('### - value =', context.activity.value);
-                        } else {
-                            console.log('### - no value found');
+                        let value = context.activity.value;
+                        if (value) {
+                            // TODO add monies
                         }
                     }
                     default:
