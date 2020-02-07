@@ -47,7 +47,7 @@ export class PowerPillager implements IBot {
                         kings = await (response as any).json();
                     } catch(e) {
                         this.errorFeedback(e, context);
-                        console.error('### error:', e);
+                        console.error('### error (fetch azure):', e);
                     }
 
                     if (kings.value[0]) {
@@ -68,8 +68,7 @@ export class PowerPillager implements IBot {
                                             ],
                                             actions: [
                                                 { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' },
-                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' } },
-                                                { type: 'invoke', title: 'invoke action', data: { monies: '1000' } }
+                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' } }
                                             ]
                                         }
                                     }
@@ -77,7 +76,7 @@ export class PowerPillager implements IBot {
                             });
                         } catch(e) {
                             this.errorFeedback(e, context);
-                            console.error('### error:', e);
+                            console.error('### error (adaptiveCard):', e);
                         }
                     } else {
                         await context.sendActivity(`Cannot find a user registred with: <i>${request.email}</i>, registrer at <a href='http://pillagers.no'>pillagers.no<a/>.`)
