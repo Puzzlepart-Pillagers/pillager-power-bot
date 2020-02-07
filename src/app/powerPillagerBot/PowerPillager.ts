@@ -72,7 +72,7 @@ export class PowerPillager implements IBot {
                             adaptiveCard.onExecuteAction = (action) => { alert(`action ${action.title} executed`); }
                             adaptiveCard.parse(card);
 
-                            console.log('### card to json:', adaptiveCard.toJSON());
+                            console.log('### card factory:', CardFactory.adaptiveCard(adaptiveCard));
                             await context.sendActivity({
                                 type: 'message',
                                 attachments: [ CardFactory.adaptiveCard(adaptiveCard) ]
