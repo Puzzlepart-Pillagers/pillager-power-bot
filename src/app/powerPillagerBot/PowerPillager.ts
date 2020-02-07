@@ -24,7 +24,7 @@ export class PowerPillager implements IBot {
     
     private commands: string[] = [ 'king', 'me', 'help' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
-        let args: string[] = text.trim().split(new RegExp('/ +/g'));
+        let args: string[] = text.split(' ');
         console.log('### args:', args);
         const command: string = args.shift().toLocaleLowerCase();
         console.log('### command:', command);
