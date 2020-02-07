@@ -45,15 +45,15 @@ export class PowerPillager implements IBot {
                             { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
                         );
                         kings = await (response as any).json();
-                        console.log('### value', kings);
+                        console.log('### kings', kings);
                     } catch(e) {
                         console.error('### error:', e);
                     }
 
                     console.log('### kings[0]:', kings[0]);
-                    if (kings[0]) {
+                    if (kings.value[0]) {
                         try {
-                            const king = kings[0];
+                            const king = kings.value[0];
                             await context.sendActivity(`<b>King:</b> ${king.firstName} ${king.lastName}, has ${king.Penning} Pennings.`);
                         } catch(e) {
                             console.error('### error:', e);
