@@ -40,10 +40,15 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
                         let sender: ChannelAccount = context.activity.from;
-                        
+
                         if (text.startsWith("stats")) {
+                            const headers: Headers = new Headers();
+                            headers.append('Content-Type', 'application/json');
+
                             if (sender) {
+                                const king = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`, { headers, method: 'GET' });
                                 await context.sendActivity(`stats: ${sender.id}`);
+                                console.log(king);
                                 return;
                             }
                             await context.sendActivity(`Cannot find user`);
