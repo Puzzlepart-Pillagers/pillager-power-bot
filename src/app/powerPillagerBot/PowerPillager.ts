@@ -54,7 +54,24 @@ export class PowerPillager implements IBot {
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
-                            await context.sendActivity(`<b>King:</b> ${king.firstName} ${king.lastName}, has ${king.Penning} Pennings.`);
+                            //`<b>King:</b> ${king.FirstName} ${king.LastName}, has ${king.Penning} Pennings.`
+                            await context.sendActivity({
+                                type: 'message',
+                                text: 'King',
+                                attachments: [
+                                    {
+                                        contentType: 'application/vnd.microsoft.card.adaptive',
+                                        content: {
+                                            type: 'AdaptiveCard',
+                                            version: '1.0',
+                                            body: [
+                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
+                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            });
                         } catch(e) {
                             console.error('### error:', e);
                         }
