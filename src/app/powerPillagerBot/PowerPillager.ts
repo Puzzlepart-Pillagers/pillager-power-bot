@@ -45,7 +45,6 @@ export class PowerPillager implements IBot {
                             { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
                         );
                         kings = await (response as any).json();
-                        console.log('### kings', kings);
                     } catch(e) {
                         console.error('### error:', e);
                     }
@@ -54,8 +53,8 @@ export class PowerPillager implements IBot {
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
-                            //`<b>King:</b> ${king.FirstName} ${king.LastName}, has ${king.Penning} Pennings.`
-                            await context.sendActivity({
+                            let adaptiveCard = new AdaptiveCard.AdaptiveCard();
+                            const card = {
                                 type: 'message',
                                 attachments: [
                                     {
@@ -67,11 +66,19 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: '<b>King</b>' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
+                                            ],
+                                            actions: [
+                                                { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' }
                                             ]
                                         }
                                     }
                                 ]
-                            });
+                            }
+                            adaptiveCard.onExecuteAction = (action) => { alert(`action ${action.title} executed`); }
+                            adaptiveCard.parse(card);
+                            const renderedCard = adaptiveCard.render();
+
+                            await context.sendActivity(renderedCard);
                         } catch(e) {
                             console.error('### error:', e);
                         }
