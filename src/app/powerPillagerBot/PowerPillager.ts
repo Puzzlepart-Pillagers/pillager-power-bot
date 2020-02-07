@@ -138,11 +138,11 @@ export class PowerPillager implements IBot {
                                 const json = await (response as any).json();
                                 const currentPenning = json.Penning;
                                 const addedPenning = cardData;
+                                console.log('### json.Penning', json.Penning);
+                                console.log('### json', json);
+                                console.log('### request', `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
                                 if (json.value !== [] && currentPenning && addedPenning) {
                                     const totalPennings: number = currentPenning + addedPenning;
-                                    console.log('### json.Penning', json.Penning);
-                                    console.log('### json', json);
-                                    console.log('### request', `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
                                     console.log('### total monies', totalPennings);
                                     await fetch(
                                         'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
