@@ -1,13 +1,9 @@
 import { BotDeclaration, IBot } from "express-msteams-host";
-import * as debug from "debug";
 import { DialogSet, DialogState } from "botbuilder-dialogs";
 import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor } from "botbuilder-teams";
-
-// Initialize debug logging module
-const log = debug("msteams");
 
 /**
  * Implementation for Power Pillager
