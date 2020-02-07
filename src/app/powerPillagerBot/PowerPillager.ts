@@ -49,7 +49,6 @@ export class PowerPillager implements IBot {
                         console.error('### error:', e);
                     }
 
-                    console.log('### kings[0]:', kings[0]);
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
@@ -63,7 +62,7 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                { type: 'TextBlock', text: '<b>King</b>' },
+                                                { type: 'xml', text: '<b>King</b>' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
                                             ],
@@ -76,9 +75,8 @@ export class PowerPillager implements IBot {
                             }
                             adaptiveCard.onExecuteAction = (action) => { alert(`action ${action.title} executed`); }
                             adaptiveCard.parse(card);
-                            const renderedCard = adaptiveCard.render();
 
-                            await context.sendActivity(renderedCard);
+                            await context.sendActivity(adaptiveCard);
                         } catch(e) {
                             console.error('### error:', e);
                         }
