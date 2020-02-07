@@ -46,6 +46,7 @@ export class PowerPillager implements IBot {
                         );
                         kings = await (response as any).json();
                     } catch(e) {
+                        this.errorFeedback(e, context);
                         console.error('### error:', e);
                     }
 
@@ -75,6 +76,7 @@ export class PowerPillager implements IBot {
                                 ]
                             });
                         } catch(e) {
+                            this.errorFeedback(e, context);
                             console.error('### error:', e);
                         }
                     } else {
@@ -95,6 +97,10 @@ export class PowerPillager implements IBot {
         }
     }
 
+    private async errorFeedback(error: Error, context: TurnContext): Promise<void> {
+        await context.sendActivity(`Something went wrong: ${error}`);
+    }
+
     public constructor(conversationState: ConversationState) {
         this.conversationState = conversationState;
         this.dialogState = conversationState.createProperty("dialogState");
@@ -105,7 +111,7 @@ export class PowerPillager implements IBot {
             onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
                 const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
                 
-                console.log('### context', context.activity.replyToId);
+                console.log('### context.activity', context.activity);
 
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
