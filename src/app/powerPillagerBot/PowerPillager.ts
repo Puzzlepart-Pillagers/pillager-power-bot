@@ -42,9 +42,9 @@ export class PowerPillager implements IBot {
                             case 'me': {
                                 if (sender) {
                                     const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
-                                    console.log(response);
+                                    console.log('#RESPONSE.body', response.body);
                                     const me = response.value[0];
-                                    console.log(me);
+                                    console.log('#ME', me);
                                     if (me) {
                                         await context.sendActivity(`<pre>${JSON.stringify(me, null, 2)}<pre/>`);
                                     }
