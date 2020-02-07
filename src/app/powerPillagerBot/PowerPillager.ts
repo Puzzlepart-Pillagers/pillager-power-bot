@@ -42,7 +42,7 @@ export class PowerPillager implements IBot {
                     try {
                         const response = await fetch(
                             `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`,
-                            { method: 'GET',  headers: { 'Content-Type': 'application/json' }}
+                            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
                         );
                         kings = await (response as any).json();
                     } catch(e) {
@@ -108,13 +108,6 @@ export class PowerPillager implements IBot {
         this.activityProc.messageActivityHandler = {
             onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
                 const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
-                try {
-                    console.log('### context.activity.value', context.activity.value);
-                } catch(e) { 
-                    this.errorFeedback(e, context);
-                    console.error('### error (adaptiveCard):', e); 
-                }
-
                 const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
                 switch (context.activity.type) {
@@ -132,7 +125,10 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Invoke: {
                         let value = context.activity.value;
                         if (value) {
-                            // TODO add monies
+                            const pennings = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
+                            const json = (pennings as any).json();
+                            const totalPennings: number = json.Penning + value;
+                            await fetch('https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', { method: 'POST', body: { email: sender.email, Penning: totalPennings }, headers: { 'Content-Type': 'application/json' } });
                         }
                     }
                     default:
