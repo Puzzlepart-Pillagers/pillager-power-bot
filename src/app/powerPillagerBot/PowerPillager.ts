@@ -4,6 +4,7 @@ import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, Convers
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor } from "botbuilder-teams";
+const got = require('got');
 
 /**
  * Implementation for Power Pillager
@@ -38,17 +39,17 @@ export class PowerPillager implements IBot {
                         let sender: ChannelAccount = context.activity.from;
 
                         if (text.startsWith("stats")) {
-                            const headers: Headers = new Headers();
-                            headers.append('Content-Type', 'application/json');
-                            console.log(headers);
-
                             if (sender) {
-                                const king: Response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`, { method: 'GET', headers });
-                                const json = await king.json();
-                                console.log(king);
-                                console.log(json);
-                                await context.sendActivity(`stats: ${json.id}`);
-                                return;
+                                try {
+                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.id}`);
+                                    console.log(response);
+
+                                    await context.sendActivity(`stats for ${sender.id}:`);
+                                    return;
+                                } catch(e) {
+                                    console.error(e);
+                                    return;
+                                }
                             }
                             await context.sendActivity(`Cannot find user`);
                             return;
