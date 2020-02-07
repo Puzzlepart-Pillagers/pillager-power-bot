@@ -67,7 +67,7 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
                                             ],
                                             actions: [
-                                                { type: 'invoke', title: 'Give 1000 Pennings', data: { addMoney: '1000' } }
+                                                { type: 'Action.Submit', title: 'Give 1000 Pennings', data: { addMoney: '1000' } }
                                             ]
                                         }
                                     }
