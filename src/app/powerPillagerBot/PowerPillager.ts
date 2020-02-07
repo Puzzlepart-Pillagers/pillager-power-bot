@@ -135,8 +135,10 @@ export class PowerPillager implements IBot {
                             const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
                             console.log('### response', await response.json());
                             const json = await (response as any).json();
-                            if (json.value !== []) {
-                                const totalPennings: number = json.Penning + value.addMoney;
+                            const currentPenning = json.Penning;
+                            const addedPenning = value.addMoney;
+                            if (json.value !== [] && currentPenning && addedPenning) {
+                                const totalPennings: number =currentPenning + addedPenning;
                                 console.log('### json.Penning', json.Penning);
                                 
                                 console.log('### json', json);
@@ -147,7 +149,6 @@ export class PowerPillager implements IBot {
                                     { method: 'POST', body: { email: sender.email, Penning: totalPennings }, headers: { 'Content-Type': 'application/json' } }
                                 );
                             }
-
                         }
                     }
                     default:
