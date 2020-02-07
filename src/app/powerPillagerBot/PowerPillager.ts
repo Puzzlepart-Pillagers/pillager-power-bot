@@ -38,16 +38,9 @@ export class PowerPillager implements IBot {
 
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        let text: string;
-                        let sender: ChannelAccount;
-                        if (teamsContext) {
-                            text = teamsContext.getActivityTextWithoutMentions().toLowerCase();
-                            sender = null
-                        } else {
-                            text = context.activity.text;
-                            sender = context.activity.from;
-                        }
-
+                        let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
+                        let sender: ChannelAccount = context.activity.from;
+                        
                         if (text.startsWith("stats")) {
                             if (sender) {
                                 await context.sendActivity(`stats: ${sender.id}`);
