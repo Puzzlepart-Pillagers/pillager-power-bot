@@ -24,7 +24,6 @@ export class PowerPillager implements IBot {
     private readonly dialogs: DialogSet;
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
-    private headers: Headers = new Headers();
     private emailRegex: RegExp = new RegExp('/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/');
 
     public constructor(conversationState: ConversationState) {
@@ -32,7 +31,6 @@ export class PowerPillager implements IBot {
         this.dialogState = conversationState.createProperty("dialogState");
         this.dialogs = new DialogSet(this.dialogState);
         this.dialogs.add(new HelpDialog("help"));
-        this.headers.append('Content-Type', 'application/json');
 
         this.activityProc.messageActivityHandler = {
             onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
