@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "gulp build",
-    "debug": "gulp serve --debug",
-    "deploy": "git add .; git commit -m \"deploy\"; git push;"
+    "debug": "gulp serve --debug"
   },
   "dependencies": {
     "@microsoft/teams-js": "1.4.2",
