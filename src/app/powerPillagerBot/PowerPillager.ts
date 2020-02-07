@@ -15,6 +15,7 @@ const got = require('got');
     process.env.MICROSOFT_APP_ID,
     process.env.MICROSOFT_APP_PASSWORD
 )
+
 export class PowerPillager implements IBot {
     private readonly conversationState: ConversationState;
     private readonly dialogs: DialogSet;
@@ -24,9 +25,8 @@ export class PowerPillager implements IBot {
     private commands: string[] = [ 'king', 'me', 'help' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
         let args: string[] = text.trim().split(new RegExp('/ +/g'));
-        args = args.map((arg: string) => { return arg.toLowerCase(); });
         const command: string = args.shift().toLocaleLowerCase();
-        if (this.commands.includes(command)) {
+        if (this.commands.indexOf(command) !== -1) {
             switch(command) {
                 case 'me':
                 case 'king': {
@@ -40,20 +40,21 @@ export class PowerPillager implements IBot {
                     console.log('### response.body:', response.body);
                     console.log('### response.value:', response.value);
 
-                    const kingInformation = JSON.parse(response);
+                    const kingInformation = await JSON.parse(response);
                     console.log('### response json parse:', kingInformation);
 
                     await context.sendActivity(`<pre>${JSON.stringify(kingInformation, null, 2)}<pre/>`);
-                    break;
+                    return;
                 }
                 case 'help': {
                     const dc = await this.dialogs.createContext(context);
                     await dc.beginDialog("help");
-                    break;
+                    return;
                 }
             }
         } else {
             await context.sendActivity(`\'${command}\' is not a valid action.`);
+            return;
         }
     }
 
