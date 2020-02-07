@@ -52,30 +52,27 @@ export class PowerPillager implements IBot {
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
-                            let adaptiveCard = new AdaptiveCard.AdaptiveCard();
-                            const card = {
-                                contentType: 'application/vnd.microsoft.card.adaptive',
-                                content: {
-                                    type: 'AdaptiveCard',
-                                    version: '1.0',
-                                    body: [
-                                        { type: 'xml', text: '<b>King</b>' },
-                                        { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                        { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
-                                    ],
-                                    actions: [
-                                        { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' }
-                                    ]
-                                }
-                            };
-
-                            adaptiveCard.onExecuteAction = (action) => { alert(`action ${action.title} executed`); }
-                            adaptiveCard.parse(card);
-
-                            console.log('### card factory:', CardFactory.adaptiveCard(adaptiveCard));
                             await context.sendActivity({
                                 type: 'message',
-                                attachments: [ CardFactory.adaptiveCard(adaptiveCard) ]
+                                attachments: [
+                                    {
+                                        contentType: 'application/vnd.microsoft.card.adaptive',
+                                        content: {
+                                            type: 'AdaptiveCard',
+                                            version: '1.0',
+                                            body: [
+                                                { type: 'xml', text: '<b>King</b>' },
+                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
+                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
+                                            ],
+                                            actions: [
+                                                { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' },
+                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' }  }
+                                                { type: 'invoke', title: 'invoke action', data: { monies: '1000' }  }
+                                            ]
+                                        }
+                                    }
+                                ]
                             });
                         } catch(e) {
                             console.error('### error:', e);
@@ -108,6 +105,8 @@ export class PowerPillager implements IBot {
             onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
                 const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
                 
+                console.log('### context', context.activity.replyToId);
+
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
