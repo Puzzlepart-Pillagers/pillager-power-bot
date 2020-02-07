@@ -26,6 +26,7 @@ export class PowerPillager implements IBot {
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
         let args: string[] = text.trim().split(new RegExp('/ +/g'));
         const command: string = args.shift().toLocaleLowerCase();
+        console.log('### command:', command);
         if (this.commands.indexOf(command) !== -1) {
             switch(command) {
                 case 'me':
@@ -37,13 +38,9 @@ export class PowerPillager implements IBot {
                     }
 
                     const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`);
-                    console.log('### response.body:', response.body);
-                    console.log('### response.value:', response.value);
-
-                    const kingInformation = await JSON.parse(response);
-                    console.log('### response json parse:', kingInformation);
-
-                    await context.sendActivity(`<pre>${JSON.stringify(kingInformation, null, 2)}<pre/>`);
+                    console.log('### response.body.value:', response.body.value);
+ 
+                    await context.sendActivity(`<pre>${sender}<pre/>`);
                     return;
                 }
                 case 'help': {
