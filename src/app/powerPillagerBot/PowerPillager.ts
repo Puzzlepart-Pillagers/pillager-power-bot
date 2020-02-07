@@ -4,7 +4,6 @@ import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, Convers
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
-import * as AdaptiveCard from 'adaptivecards';
 const fetch = require('node-fetch');
 
 /**
@@ -128,6 +127,7 @@ export class PowerPillager implements IBot {
                             const pennings = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
                             const json = (pennings as any).json();
                             const totalPennings: number = json.Penning + value;
+                            console.log('### json', json);
                             console.log('### total monies', totalPennings);
                             await fetch(
                                 'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
