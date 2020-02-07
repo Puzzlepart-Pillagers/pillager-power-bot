@@ -15,6 +15,7 @@
     "@types/morgan": "1.7.35",
     "@types/node-fetch": "^2.5.4",
     "@types/request": "2.47.1",
+    "adaptivecards": "^1.2.5",
     "autoprefixer": "^9.5.1",
     "botbuilder": "4.4.0",
     "botbuilder-dialogs": "4.4.0",

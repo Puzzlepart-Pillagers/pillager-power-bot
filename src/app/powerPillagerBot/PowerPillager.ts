@@ -4,7 +4,7 @@ import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, Convers
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
-import request = require("request");
+import * as AdaptiveCard from 'adaptivecards';
 const fetch = require('node-fetch');
 
 /**
@@ -32,7 +32,7 @@ export class PowerPillager implements IBot {
                 case 'me':
                 case 'stats':
                 case 'king': {
-                    let request = { email: sender.email };
+                    let request = { email: sender.email.toLowerCase() };
                     if (args.indexOf('--user') !== -1) {
                         const arg = args[args.indexOf('--user') + 1]
                         if (arg) request.email = arg;
@@ -57,7 +57,6 @@ export class PowerPillager implements IBot {
                             //`<b>King:</b> ${king.FirstName} ${king.LastName}, has ${king.Penning} Pennings.`
                             await context.sendActivity({
                                 type: 'message',
-                                text: 'King',
                                 attachments: [
                                     {
                                         contentType: 'application/vnd.microsoft.card.adaptive',
@@ -65,6 +64,7 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
+                                                { type: 'TextBlock', text: '<b>King</b>' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
                                             ]
