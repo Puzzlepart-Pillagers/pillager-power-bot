@@ -1,9 +1,9 @@
 import { BotDeclaration, IBot } from "express-msteams-host";
 import { DialogSet, DialogState } from "botbuilder-dialogs";
-import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount } from "botbuilder";
+import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount, BotAdapter } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
-import { TeamsContext, TeamsActivityProcessor } from "botbuilder-teams";
+import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter } from "botbuilder-teams";
 const got = require('got');
 
 /**
@@ -37,14 +37,13 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
                         let sender: ChannelAccount = context.activity.from;
-                        let test = context.activity;
+                        
 
                         if (text.startsWith("stats")) {
                             if (sender) {
                                 try {
                                     const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.name}`);
-                                    //console.log(response);
-                                    console.log('test', test);
+                                    console.log(response);
                                     await context.sendActivity(`stats for ${sender.name}:`);
                                     return;
                                 } catch(e) {
@@ -54,7 +53,12 @@ export class PowerPillager implements IBot {
                             }
                             await context.sendActivity(`Cannot find user`);
                             return;
-                        }  else if (text.startsWith("help")) {
+                        } else if (text.startsWith('members')) {
+                            const members = await (context.adapter as TeamsAdapter).getActivityMembers(context);
+                            const convMembers = await (context.adapter as TeamsAdapter).getConversationMembers(context);
+                            await context.sendActivity({ textFormat: 'xml', text: `<b>Activity members:</b><pre>${JSON.stringify(members, null, 2)}</pre><b>Conversation members:</b><pre>${JSON.stringify(convMembers, null, 2)}</pre>` });
+                            return;
+                        } else if (text.startsWith("help")) {
                             const dc = await this.dialogs.createContext(context);
                             await dc.beginDialog("help");
                         } else {
