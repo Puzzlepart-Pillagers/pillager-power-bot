@@ -62,7 +62,7 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                { type: 'xml', text: '<b>King</b>' },
+                                                { type: 'TextBlock', text: '<b>King</b>' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
                                             ],
