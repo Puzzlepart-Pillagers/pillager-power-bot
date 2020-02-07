@@ -24,7 +24,7 @@ export class PowerPillager implements IBot {
     private readonly activityProc = new TeamsActivityProcessor();
     
     private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man' ];
-    private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {  
+    private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> { 
         let args: string[] = text.trim().split(' ');
         const command: string = args[0].toLocaleLowerCase();
         if (this.commands.indexOf(command) !== -1) {
@@ -62,13 +62,12 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                { type: 'TextBlock', text: '<b>King</b>' },
+                                                { type: 'TextBlock', text: 'King' },
                                                 { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings` }
                                             ],
                                             actions: [
-                                                { type: 'Action.OpenUrl', title: 'pillagers.no', url: 'http://pillagers.no' },
-                                                { type: 'Action.Submit', title: 'submit action', data: { monies: '1000' } }
+                                                { type: 'invoke', title: 'Give 1000 Pennings', data: { addMoney: '1000' } }
                                             ]
                                         }
                                     }
@@ -109,16 +108,24 @@ export class PowerPillager implements IBot {
         this.activityProc.messageActivityHandler = {
             onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
                 const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
-                
-                console.log('### context.activity', context.activity);
+                try {
+                    console.log('### context.activity.value', context.activity.value);
+                } catch(e) { 
+                    this.errorFeedback(e, context);
+                    console.error('### error (adaptiveCard):', e); 
+                }
 
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
+                        let text: string = teamsContext ? (teamsContext.getActivityTextWithoutMentions() ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text) : context.activity.text;
                         const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
+                        console.log('### text', text);
                         await this.messageHandler(text, context, sender);
                         console.log('### - Command finsihed');
+                    case ActivityTypes.Invoke: {
+                        console.log('### - INVOKDE COMMAND EXECUTED!');
+                    }
                     default:
                         break;
                 }
