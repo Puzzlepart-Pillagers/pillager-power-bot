@@ -40,7 +40,7 @@ export class PowerPillager implements IBot {
                     const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
                     console.log('### response', response);
                     try {
-                        const json = await response.body.json();
+                        const json = await response.json();
                         if (json) {
                             console.log('### json:', json);
                         }
