@@ -125,6 +125,11 @@ export class PowerPillager implements IBot {
                         console.log('### - Command finsihed');
                     case ActivityTypes.Invoke: {
                         console.log('### - INVOKDE COMMAND EXECUTED!');
+                        if (context.activity.value) {
+                            console.log('### - value =', context.activity.value);
+                        } else {
+                            console.log('### - no value found');
+                        }
                     }
                     default:
                         break;
