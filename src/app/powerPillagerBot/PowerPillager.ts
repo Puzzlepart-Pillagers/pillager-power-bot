@@ -3,7 +3,7 @@ import { DialogSet, DialogState } from "botbuilder-dialogs";
 import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount, BotAdapter } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
-import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter } from "botbuilder-teams";
+import { TeamsContext, TeamsActivityProcessor, TeamsConnectorClient, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
 const got = require('got');
 
 /**
@@ -36,15 +36,18 @@ export class PowerPillager implements IBot {
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? teamsContext.getActivityTextWithoutMentions().toLowerCase() : context.activity.text;
-                        let sender: ChannelAccount = context.activity.from;
-                        
+                        const adapter = (context.adapter as TeamsAdapter);
+                        const activityMembers = await adapter.getActivityMembers(context);
+                        const conversationMembers = await adapter.getConversationMembers(context);
+                        const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
+                        const sender: TeamsChannelAccount = members[0];
 
                         if (text.startsWith("stats")) {
                             if (sender) {
                                 try {
-                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.name}`);
+                                    const response = await got(`https://pillagers-storage-functions.azurewebsites.net/api/GetUnits?email=${sender.email}`);
                                     console.log(response);
-                                    await context.sendActivity(`stats for ${sender.name}:`);
+                                    await context.sendActivity(`stats for ${sender.email}:`);
                                     return;
                                 } catch(e) {
                                     console.error(e);
