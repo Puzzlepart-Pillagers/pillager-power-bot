@@ -48,11 +48,11 @@ export class PowerPillager implements IBot {
                                             const me = response.value[0];
                                             console.log('#ME', me);
                                             await context.sendActivity(`<pre>${JSON.stringify(me, null, 2)}<pre/>`);
+                                            return;
                                         }
                                     } catch(e) {
                                         console.error(e);
                                     }
-                                    return;
                                 }
                                 await context.sendActivity(`Cannot find any VIPPS user with email: ${sender.email}`);
                                 return;
