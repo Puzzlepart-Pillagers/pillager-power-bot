@@ -93,7 +93,7 @@ export class PowerPillager implements IBot {
 
                     const kings: any[] = [ { name: 'Reidar Olafsson', email: 'tonnes@pzl.onmicrosoft.com' }, 'Erik Thorsson', 'Teit Olafsson' ];
                     const actions = kings.map((item) => {
-                        return { type: 'Action.Submit', title: item, data: { warKings: item.email } };
+                        return { type: 'Action.Submit', title: item.name, data: { warKings: item.email } };
                     });
 
                     const response = await fetch(
@@ -112,7 +112,7 @@ export class PowerPillager implements IBot {
                                         type: 'AdaptiveCard',
                                         version: '1.0',
                                         body: [
-                                            { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who do you want to wage war on?` },
+                                            { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who would you like to wage war on?` },
                                             { type: 'TextBlock', text: `Enemy kings:` }
                                         ],
                                         actions
@@ -121,10 +121,8 @@ export class PowerPillager implements IBot {
                             ]
                         });
                     } else {
-                        await context.sendActivity(`${sender.email.toLowerCase()} is not a valid king.`);
+                        await context.sendActivity(`${senderKingEmail} is not a valid king.`);
                     }
-
-
                 }
                 return;
             }
@@ -162,7 +160,7 @@ export class PowerPillager implements IBot {
                     case ActivityTypes.Invoke: {
                         if (context.activity.value) {
                             if (context.activity.value.addMoney) {
-                                const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLocaleLowerCase();
+                                const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLowerCase();
                                 const get: any = await fetch(
                                     `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${king}`,
                                     { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
