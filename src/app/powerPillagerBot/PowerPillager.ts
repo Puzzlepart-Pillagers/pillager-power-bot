@@ -139,7 +139,7 @@ export class PowerPillager implements IBot {
                                 console.log('### total monies', Penning);
                                 await fetch(
                                     'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
-                                    { method: 'POST', body: { email, Penning }, headers: { 'Content-Type': 'application/json' } }
+                                    { method: 'POST', body: { email, Penning } }
                                 );
                             } else {
                                 console.log('### missing monies');
