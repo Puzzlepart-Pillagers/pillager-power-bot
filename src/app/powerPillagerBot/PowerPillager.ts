@@ -93,7 +93,7 @@ export class PowerPillager implements IBot {
                     
                     const actions = kings.map((item) => {
                         return { type: 'Action.Submit', title: item, data: { warKings: item } };
-                    });
+                    });                    
 
                     await context.sendActivity({
                         type: 'message',
@@ -104,8 +104,8 @@ export class PowerPillager implements IBot {
                                     type: 'AdaptiveCard',
                                     version: '1.0',
                                     body: [
-                                        { type: 'TextBox', text: `${sender.email}, who do you want to wage war on?` },
-                                        { type: 'TextBox', text: `Enemy kings:` }
+                                        { type: 'TextBlock', text: `${sender.email}, who do you want to wage war on?` },
+                                        { type: 'TextBlock', text: `Enemy kings:` }
                                     ],
                                     actions
                                 }
@@ -113,6 +113,7 @@ export class PowerPillager implements IBot {
                         ]
                     });
                 }
+                return;
             }
         } else {
             await context.sendActivity(`${command} is not a valid action.`);
