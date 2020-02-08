@@ -1,6 +1,6 @@
 import { BotDeclaration, IBot } from "express-msteams-host";
 import { DialogSet, DialogState } from "botbuilder-dialogs";
-import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes, ChannelAccount, BotAdapter } from "botbuilder";
+import { StatePropertyAccessor, CardFactory, TurnContext, MemoryStorage, ConversationState, ActivityTypes } from "botbuilder";
 import HelpDialog from "./dialogs/HelpDialog";
 import WelcomeCard from "./dialogs/WelcomeDialog";
 import { TeamsContext, TeamsActivityProcessor, TeamsAdapter, TeamsChannelAccount } from "botbuilder-teams";
@@ -89,29 +89,42 @@ export class PowerPillager implements IBot {
                 }
                 case 'war':
                 case 'wagewar': {
-                    const kings = [ 'king 1', 'king 2', 'king 3', 'king 4', 'king 5' ];
-                    
+                    const senderKingEmail: string = sender.email.toLowerCase();
+
+                    const kings: any[] = [ { name: 'Reidar Olafsson', email: 'tonnes@pzl.onmicrosoft.com' }, 'Erik Thorsson', 'Teit Olafsson' ];
                     const actions = kings.map((item) => {
                         return { type: 'Action.Submit', title: item, data: { warKings: item } };
-                    });                    
-
-                    await context.sendActivity({
-                        type: 'message',
-                        attachments: [
-                            {
-                                contentType: 'application/vnd.microsoft.card.adaptive',
-                                content: {
-                                    type: 'AdaptiveCard',
-                                    version: '1.0',
-                                    body: [
-                                        { type: 'TextBlock', text: `${sender.email}, who do you want to wage war on?` },
-                                        { type: 'TextBlock', text: `Enemy kings:` }
-                                    ],
-                                    actions
-                                }
-                            }
-                        ]
                     });
+
+                    const response = await fetch(
+                        `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${senderKingEmail}`,
+                        { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                    );
+                    let json = await (response as any).json();
+                    if (json.value) {
+                        const senderKing = json.value[0];
+                        await context.sendActivity({
+                            type: 'message',
+                            attachments: [
+                                {
+                                    contentType: 'application/vnd.microsoft.card.adaptive',
+                                    content: {
+                                        type: 'AdaptiveCard',
+                                        version: '1.0',
+                                        body: [
+                                            { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who do you want to wage war on?` },
+                                            { type: 'TextBlock', text: `Enemy kings:` }
+                                        ],
+                                        actions
+                                    }
+                                }
+                            ]
+                        });
+                    } else {
+                        await context.sendActivity(`${sender.email.toLowerCase()} is not a valid king.`);
+                    }
+
+
                 }
                 return;
             }
@@ -148,9 +161,6 @@ export class PowerPillager implements IBot {
                         }
                     case ActivityTypes.Invoke: {
                         if (context.activity.value) {
-                            console.log('==============================');
-                            console.log(context.activity.value);
-                            console.log('==============================');
                             if (context.activity.value.addMoney) {
                                 const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLocaleLowerCase();
                                 const get: any = await fetch(
