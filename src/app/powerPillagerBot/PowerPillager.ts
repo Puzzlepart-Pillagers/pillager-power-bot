@@ -161,8 +161,11 @@ export class PowerPillager implements IBot {
                 const teamsContext: TeamsContext = TeamsContext.from(context);
                 const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
+                console.log(`### Activity type inside: ${context.activity.type}`);
+
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
+                        console.log(`### Activity type inside inside: ${context.activity.type}`);
                         let text: string = teamsContext ? (
                             teamsContext.getActivityTextWithoutMentions() ? 
                                 teamsContext.getActivityTextWithoutMentions().toLowerCase() : 
