@@ -141,38 +141,6 @@ export class PowerPillager implements IBot {
     }
 
     /**
-     * Capitalize start character of every word in string.
-     * Used for name capitalization
-     * 
-     * @param str String to capitalize
-     */
-    private capitalizeWords(str: string): string {
-        let words: string[] = str.toLowerCase().split(' ');
-        for (let i = 0; i < words.length; i++) {
-            words[i] = `${words[i].charAt(0).toUpperCase()}${words[i].substring(1)}`
-        }
-        return words.join(' ');
-    }
-
-    /**
-     * Get all kings
-     * 
-     * @returns Array of kings or an empty array
-     */
-    private async getKings(): Promise<any[]> {
-        const response = fetch(
-            'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
-            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
-        );
-        const json = await response.json();
-        if (json) {
-            return json.value;
-        }
-
-        return [];
-    }
-
-    /**
      * Send back feedback to user
      * 
      * @param error Error
@@ -190,9 +158,7 @@ export class PowerPillager implements IBot {
 
         this.activityProc.messageActivityHandler = {
             onMessage: async (context: TurnContext): Promise<void> => {
-                console.log('============== [  ] =============');
-
-                const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams, missing teams context
+                const teamsContext: TeamsContext = TeamsContext.from(context);
                 const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
                 switch (context.activity.type) {
@@ -292,7 +258,40 @@ export class PowerPillager implements IBot {
        return null;
    }
 
+    /**
+     * Capitalize start character of every word in string.
+     * Used for name capitalization
+     * 
+     * @param str String to capitalize
+     */
+    private capitalizeWords(str: string): string {
+        let words: string[] = str.toLowerCase().split(' ');
+        for (let i = 0; i < words.length; i++) {
+            words[i] = `${words[i].charAt(0).toUpperCase()}${words[i].substring(1)}`
+        }
+        return words.join(' ');
+    }
+
+    /**
+     * Get all kings
+     * 
+     * @returns Array of kings or an empty array
+     */
+    private async getKings(): Promise<any[]> {
+        const response = fetch(
+            'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
+            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+        );
+        const json = await response.json();
+        if (json) {
+            return json.value;
+        }
+
+        return [];
+    }
+
    public async onTurn(context: TurnContext): Promise<any> {
+       console.log('### activity type', context.activity.type);
         await this.activityProc.processIncomingActivity(context);
     }
 
