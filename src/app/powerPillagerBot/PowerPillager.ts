@@ -213,6 +213,7 @@ export class PowerPillager implements IBot {
                                 try {
                                     await context.sendActivity({
                                         type: 'message',
+                                        text: `<at>${targetKingEmail}`,
                                         attachments: [
                                             {
                                                 contentType: 'application/vnd.microsoft.card.adaptive',
@@ -220,7 +221,7 @@ export class PowerPillager implements IBot {
                                                     type: 'AdaptiveCard',
                                                     version: '1.0',
                                                     body: [
-                                                        { type: 'TextBlock', text: `Waging war against ${targetKingName}\n @${targetKingEmail}`, size: "Large", color: 'Attention', weight: 'Bolder' },
+                                                        { type: 'TextBlock', text: `Waging war against ${targetKingName}`, size: "Large", color: 'Attention', weight: 'Bolder' },
                                                     ]
                                                 }
                                             }
