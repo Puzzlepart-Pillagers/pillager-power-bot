@@ -130,15 +130,16 @@ export class PowerPillager implements IBot {
                         console.log('============= INVOKE ==============');
                         if (context.activity && context.activity.value) {
                             console.log('### context.activity.value', context.activity.value);
-                            console.log(`### request: https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`);
-                            const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
+                            const email = sender.email.toLowerCase();
+                            console.log(`### request: https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`);
+                            const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
                             console.log('### response', await response.json());
                             const json = await (response as any).json();
                             const currentPenning = json.Penning ? json.Penning : 0;
                             const addedPenning = context.activity.value.addMoney ? context.activity.value.addMoney : 0;
                             console.log('### json.Penning', json.Penning);
                             console.log('### json', json);
-                            console.log('### request', `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${sender.email.toLowerCase()}`);
+                            console.log('### request', `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`);
                             if (json.value !== [] && currentPenning && addedPenning) {
                                 const totalPennings: number = currentPenning + addedPenning;
                                 console.log('### total monies', totalPennings);
