@@ -93,7 +93,7 @@ export class PowerPillager implements IBot {
 
                     const kings: any[] = [ { name: 'Reidar Olafsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Erik Thorsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Teit Olafsson', email: 'fake@pzl.onmicrosoft.com' } ];
                     const actions = kings.map((item) => {
-                        return { type: 'Action.Submit', title: item.name, data: { targetKingEmail: item.email, targetKingName: item.name } };
+                        return { type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png", data: { targetKingEmail: item.email, targetKingName: item.name } };
                     });
 
                     const response = await fetch(
@@ -112,6 +112,7 @@ export class PowerPillager implements IBot {
                                         type: 'AdaptiveCard',
                                         version: '1.0',
                                         body: [
+                                            { type: 'TextBlock', text: `Wage War`, size: "Large", color: 'Attention', weight: 'Bolder' },
                                             { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who would you like to wage war on?` },
                                             { type: 'TextBlock', text: `Enemy kings:` }
                                         ],
