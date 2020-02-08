@@ -22,7 +22,7 @@ export class PowerPillager implements IBot {
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
     
-    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man', 'wagewar', 'war' ];
+    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man', '?', 'wagewar', 'war' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> { 
         let args: string[] = text.trim().split(' ');
         const command: string = args[0].toLocaleLowerCase();
@@ -82,10 +82,10 @@ export class PowerPillager implements IBot {
                     }
                     return;
                 }
+                case '?':
                 case 'man':
                 case 'help': {
-                    const dc = await this.dialogs.createContext(context);
-                    await dc.beginDialog("help");
+                    await context.sendActivity('Actions: man, help, ?, status, me, king, war, wagewar');
                     return;
                 }
                 case 'war':
@@ -130,7 +130,7 @@ export class PowerPillager implements IBot {
                                             version: '1.0',
                                             body: [
                                                 { type: 'TextBlock', text: `Wage War`, size: "Large", color: 'Attention', weight: 'Bolder' },
-                                                { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who would you like to wage war on?` },
+                                                { type: 'TextBlock', text: `${this.capitalizeWords(`${senderKing.FirstName} ${senderKing.LastName}`)}, who would you like to wage war on?` },
                                                 { type: 'TextBlock', text: `Enemy kings:` }
                                             ],
                                             actions
@@ -231,7 +231,7 @@ export class PowerPillager implements IBot {
                                     console.error(`### Error (waging war on action)`, e);
                                 }
 
-                                // TODO logic for waging war
+                                await this.wageWar(context, { attacker: sender.email.toLowerCase(), defender: targetKingEmail });
                             }
                         }
                     }
@@ -255,6 +255,15 @@ export class PowerPillager implements IBot {
                 }
             }
         };
+   }
+
+   private async wageWar(context: TurnContext, data: { attacker: string, defender: string }) {
+        const response = await fetch(
+            `https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defender=${data.defender}`
+        );
+        const json = (response as any).json();
+
+        console.log(`### json feedback wageWar`, json);
    }
 
    private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
@@ -302,14 +311,6 @@ export class PowerPillager implements IBot {
             if (json) {
                 return json.value;
             }
-
-            /*
-                const get: any = await fetch(
-                    `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${king}`,
-                    { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
-                );
-                const json: any = await get.json();
-            */
         } catch(e) {
             console.error('### Error (getKings())', e);
             this.onError(e, context);
