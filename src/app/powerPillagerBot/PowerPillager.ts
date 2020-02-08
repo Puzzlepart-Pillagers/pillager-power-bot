@@ -93,12 +93,17 @@ export class PowerPillager implements IBot {
                     const senderKingEmail: string = sender.email.toLowerCase();
 
                     // TODO fetch from get all kings
-                    const kings: any[] = (await this.getKings(context)).map((king: any) => { 
+                    const kings: any[] = (await this.getKings(context)).map((king: any) => {
                         return { 
                             name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), 
                             email: king.email 
                         }
                     });
+
+                    if (kings.length <= 0) {
+                        await context.sendActivity('Cannot find any enemy kings!');
+                        return;
+                    }
 
                     const actions = kings.map((item) => {
                         return { 
@@ -288,7 +293,7 @@ export class PowerPillager implements IBot {
      */
     private async getKings(context: TurnContext): Promise<any[]> {
         try {
-            const response = fetch(
+            const response = await fetch(
                 'https://pillagers-storage-functions.azurewebsites.net/api/GetKings',
                 { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
             );
