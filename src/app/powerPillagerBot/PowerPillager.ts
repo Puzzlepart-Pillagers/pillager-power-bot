@@ -132,7 +132,7 @@ export class PowerPillager implements IBot {
                             const json: any = response.json();
                             const currentPennings = json.value && json.value[0];
                             const addedPennings = context.activity.value.addMoney;
-                            console.log('current', currentPennings, 'added', addedPennings);
+                            console.log(`==== current: ${currentPennings}, added: ${addedPennings} ====`);
                             if (currentPennings && addedPennings) {
                                 const totalPennings: number = addedPennings + currentPennings;
                                 console.log('### total monies', totalPennings);
