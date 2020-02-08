@@ -6,7 +6,7 @@ export default class HelpDialog extends Dialog {
     }
 
     public async beginDialog(context: DialogContext, options?: any): Promise<DialogTurnResult> {
-        context.context.sendActivity(`TODO - help`);
+        context.context.sendActivity({ type: 'xml', text: `<pre>help, man, stats, me, king, war, wagewar</pre>` });
         return await context.endDialog();
     }
 }

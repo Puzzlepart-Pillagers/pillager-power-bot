@@ -91,6 +91,7 @@ export class PowerPillager implements IBot {
                 case 'wagewar': {
                     const senderKingEmail: string = sender.email.toLowerCase();
 
+                    // TODO fetch from get all kings
                     const kings: any[] = [ { name: 'Reidar Olafsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Erik Thorsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Teit Olafsson', email: 'fake@pzl.onmicrosoft.com' } ];
                     const actions = kings.map((item) => {
                         return { type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png", data: { targetKingEmail: item.email, targetKingName: item.name } };
@@ -184,7 +185,21 @@ export class PowerPillager implements IBot {
                                 const targetKingEmail: string = context.activity.value.targetKingEmail;
                                 const targetKingName: string = context.activity.value.targetKingName;
                                 try {
-                                    await context.sendActivity(`Waging war on ${targetKingName}`);
+                                    await context.sendActivity({
+                                        type: 'message',
+                                        attachments: [
+                                            {
+                                                contentType: 'application/vnd.microsoft.card.adaptive',
+                                                content: {
+                                                    type: 'AdaptiveCard',
+                                                    version: '1.0',
+                                                    body: [
+                                                        { type: 'TextBlock', text: `Waging war against ${targetKingName}`, size: "Large", color: 'Attention', weight: 'Bolder' },
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    });
                                 } catch(e) {
                                     this.errorFeedback(e, context);
                                     console.error(`### Error (waging war on action)`, e);
