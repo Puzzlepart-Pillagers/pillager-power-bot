@@ -220,7 +220,7 @@ export class PowerPillager implements IBot {
                                                     type: 'AdaptiveCard',
                                                     version: '1.0',
                                                     body: [
-                                                        { type: 'TextBlock', text: `Waging war against ${targetKingName}`, size: "Large", color: 'Attention', weight: 'Bolder' },
+                                                        { type: 'TextBlock', text: `Waging war against ${targetKingName}\n @${targetKingEmail}`, size: "Large", color: 'Attention', weight: 'Bolder' },
                                                     ]
                                                 }
                                             }
@@ -263,13 +263,8 @@ export class PowerPillager implements IBot {
     * @param context Teams context
     * @param data attacker and defender emails
     */
-   private async wageWar(context: TurnContext, data: { attacker: string, defender: string }) {
-        const response = await fetch(
-            `https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defending=${data.defender}`
-        );
-        const json = await (response as any).json();
-
-        console.log(`### json feedback wageWar`, json);
+   private async wageWar(data: { attacker: string, defender: string }) {
+        await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defending=${data.defender}`);
    }
 
    private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
