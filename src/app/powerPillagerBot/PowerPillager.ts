@@ -22,7 +22,7 @@ export class PowerPillager implements IBot {
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
     
-    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man' ];
+    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man', 'wagewar', 'war' ];
     private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> { 
         let args: string[] = text.trim().split(' ');
         const command: string = args[0].toLocaleLowerCase();
@@ -61,24 +61,12 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                {
-                                                    type: 'ColumnSet',
-                                                    columns: [
-                                                        {
-                                                            type: 'Column', width: 'stretch', items: [
-                                                                { type: 'TextBlock', text: `${king.FirstName} ${king.LastName}` }
-                                                            ]
-                                                        },
-                                                        {
-                                                            type: 'Column', width: 'stretch', items: [
-                                                                { type: 'TextBlock', text: `${king.FirstName} ${king.LastName}` }
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
+                                                { type: 'Image', url: 'https://www.epsilontheory.com/wp-content/uploads/epsilon-theory-one-million-dollars-september-15-2015-austin-powers.jpg' },
+                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
+                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
                                             ],
                                             actions: [
-                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email, test: 'test' } }
+                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email } }
                                             ]
                                         }
                                     }
@@ -99,6 +87,7 @@ export class PowerPillager implements IBot {
                     await dc.beginDialog("help");
                     return;
                 }
+                case 'war':
                 case 'wagewar': {
                     const kings = [ 'king 1', 'king 2', 'king 3', 'king 4', 'king 5' ];
                     
