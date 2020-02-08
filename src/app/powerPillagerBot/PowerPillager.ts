@@ -93,7 +93,7 @@ export class PowerPillager implements IBot {
 
                     const kings: any[] = [ { name: 'Reidar Olafsson', email: 'tonnes@pzl.onmicrosoft.com' }, 'Erik Thorsson', 'Teit Olafsson' ];
                     const actions = kings.map((item) => {
-                        return { type: 'Action.Submit', title: item, data: { warKings: item } };
+                        return { type: 'Action.Submit', title: item, data: { warKings: item.email } };
                     });
 
                     const response = await fetch(
