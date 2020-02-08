@@ -147,7 +147,7 @@ export class PowerPillager implements IBot {
      * @param context Teams context
      */
     private async errorFeedback(error: Error, context: TurnContext): Promise<void> {
-        await context.sendActivity(`Something went wrong: ${error}`);
+        //await context.sendActivity(`Something went wrong: ${error}`);
     }
 
     public constructor(conversationState: ConversationState) {
