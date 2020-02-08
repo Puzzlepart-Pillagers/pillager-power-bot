@@ -52,7 +52,7 @@ export class PowerPillager implements IBot {
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
-                            const kingName: string = this.capitalixeWords(`${king.FirstName} ${king.LastName}`);
+                            const kingName: string = this.capitalizeWords(`${king.FirstName} ${king.LastName}`);
                             await context.sendActivity({
                                 type: 'message',
                                 attachments: [
@@ -93,9 +93,14 @@ export class PowerPillager implements IBot {
                     const senderKingEmail: string = sender.email.toLowerCase();
 
                     // TODO fetch from get all kings
-                    const kings: any[] = [ { name: 'Reidar Olafsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Erik Thorsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Teit Olafsson', email: 'fake@pzl.onmicrosoft.com' } ];
+
+                    const kings: any[] = (await this.getKings()).map((king: any) => { return { name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), email: king.email } });
+
                     const actions = kings.map((item) => {
-                        return { type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png", data: { targetKingEmail: item.email, targetKingName: item.name } };
+                        return { 
+                            type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png", 
+                            data: { targetKingEmail: item.email, targetKingName: item.name } 
+                        };
                     });
 
                     const response = await fetch(
@@ -141,12 +146,30 @@ export class PowerPillager implements IBot {
      * 
      * @param str String to capitalize
      */
-    private capitalixeWords(str: string): string {
+    private capitalizeWords(str: string): string {
         let words: string[] = str.toLowerCase().split(' ');
         for (let i = 0; i < words.length; i++) {
             words[i] = `${words[i].charAt(0).toUpperCase()}${words[i].substring(1)}`
         }
         return words.join(' ');
+    }
+
+    /**
+     * Get all kings
+     * 
+     * @returns Array of kings or an empty array
+     */
+    private async getKings(): Promise<any[]> {
+        const response = fetch(
+            'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
+            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+        );
+        const json = await response.json();
+        if (json) {
+            return json.value;
+        }
+
+        return [];
     }
 
     /**
