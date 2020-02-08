@@ -72,7 +72,7 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
                                             ],
                                             actions: [
-                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: '1000000000' } }
+                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000 } }
                                             ]
                                         }
                                     }
@@ -137,10 +137,11 @@ export class PowerPillager implements IBot {
                             if (currentPennings && addedPennings) {
                                 const Penning: number = addedPennings + currentPennings;
                                 console.log('### total monies', Penning);
-                                await fetch(
+                                const response = await fetch(
                                     'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
                                     { method: 'POST', body: { email, Penning } }
                                 );
+                                console.log(' ====> response', response);
                             } else {
                                 console.log('### missing monies');
                             }
