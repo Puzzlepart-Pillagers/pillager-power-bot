@@ -21,13 +21,13 @@ export class PowerPillager implements IBot {
     private readonly dialogs: DialogSet;
     private dialogState: StatePropertyAccessor<DialogState>;
     private readonly activityProc = new TeamsActivityProcessor();
-    
-    private commands: string[] = [ 'king', 'me', 'stats', 'help', 'man', '?', 'wagewar', 'war' ];
-    private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> { 
+
+    private commands: string[] = ['king', 'me', 'stats', 'help', 'man', '?', 'wagewar', 'war'];
+    private async messageHandler(text: string, context: TurnContext, sender: TeamsChannelAccount): Promise<void> {
         let args: string[] = text.trim().split(' ');
         const command: string = args[0].toLocaleLowerCase();
         if (this.commands.indexOf(command) !== -1) {
-            switch(command) {
+            switch (command) {
                 case 'me':
                 case 'stats':
                 case 'king': {
@@ -41,10 +41,10 @@ export class PowerPillager implements IBot {
                     try {
                         const response = await fetch(
                             `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${request.email}`,
-                            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                            { method: 'GET', headers: { 'Content-Type': 'application/json' } }
                         );
                         kings = await (response as any).json();
-                    } catch(e) {
+                    } catch (e) {
                         this.onError(e, context);
                         console.error('### error (fetch azure):', e);
                     }
@@ -73,7 +73,7 @@ export class PowerPillager implements IBot {
                                     }
                                 ]
                             });
-                        } catch(e) {
+                        } catch (e) {
                             this.onError(e, context);
                             console.error('### error (adaptiveCard):', e);
                         }
@@ -94,9 +94,9 @@ export class PowerPillager implements IBot {
 
                     // TODO fetch from get all kings
                     const kings: any[] = (await this.getKings(context)).map((king: any) => {
-                        return { 
-                            name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), 
-                            email: king.email 
+                        return {
+                            name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`),
+                            email: king.email
                         }
                     });
 
@@ -106,15 +106,15 @@ export class PowerPillager implements IBot {
                     }
 
                     const actions = kings.map((item) => {
-                        return { 
-                            type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png", 
-                            data: { targetKingEmail: item.email, targetKingName: item.name } 
+                        return {
+                            type: 'Action.Submit', title: item.name, iconUrl: "https://cdn0.iconfinder.com/data/icons/material-style/48/crown-512.png",
+                            data: { targetKingEmail: item.email, targetKingName: item.name }
                         };
                     });
 
                     const response = await fetch(
                         `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${senderKingEmail}`,
-                        { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                        { method: 'GET', headers: { 'Content-Type': 'application/json' } }
                     );
                     let json = await (response as any).json();
                     if (json.value) {
@@ -138,7 +138,7 @@ export class PowerPillager implements IBot {
                                     }
                                 ]
                             });
-                        } catch(e) {
+                        } catch (e) {
                             this.onError(e, context);
                             console.error('### Error (sendActivity senderKing stuff)', e);
                         }
@@ -146,7 +146,7 @@ export class PowerPillager implements IBot {
                         await context.sendActivity(`${senderKingEmail} is not a valid king.`);
                     }
                 }
-                return;
+                    return;
             }
         } else {
             await context.sendActivity(`${command} is not a valid action.`);
@@ -178,8 +178,8 @@ export class PowerPillager implements IBot {
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
                         let text: string = teamsContext ? (
-                            teamsContext.getActivityTextWithoutMentions() ? 
-                                teamsContext.getActivityTextWithoutMentions().toLowerCase() : 
+                            teamsContext.getActivityTextWithoutMentions() ?
+                                teamsContext.getActivityTextWithoutMentions().toLowerCase() :
                                 context.activity.text
                         ) : context.activity.text;
                         if (text) {
@@ -191,7 +191,7 @@ export class PowerPillager implements IBot {
                                 const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLowerCase();
                                 const get: any = await fetch(
                                     `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${king}`,
-                                    { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                                    { method: 'GET', headers: { 'Content-Type': 'application/json' } }
                                 );
                                 const json: any = await get.json();
                                 const currentPennings: number = parseFloat(json.value[0].Penning);
@@ -200,20 +200,20 @@ export class PowerPillager implements IBot {
                                     const Penning: number = addedPennings + currentPennings;
                                     await fetch(
                                         'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning',
-                                        { method: 'POST', body: JSON.stringify({ king, Penning }), headers: { 'Content-Type': 'application/json' }}
+                                        { method: 'POST', body: JSON.stringify({ king, Penning }), headers: { 'Content-Type': 'application/json' } }
                                     );
                                 } else {
                                     console.error('### Error - missing monies');
                                     this.onError(new Error('Cannot find both sources of pennings'), context);
                                 }
                             }
+
                             if (context.activity.value.targetKingName) {
                                 const targetKingEmail: string = context.activity.value.targetKingEmail;
                                 const targetKingName: string = context.activity.value.targetKingName;
                                 try {
                                     await context.sendActivity({
                                         type: 'message',
-                                        text: `<at>${targetKingEmail}`,
                                         attachments: [
                                             {
                                                 contentType: 'application/vnd.microsoft.card.adaptive',
@@ -227,7 +227,7 @@ export class PowerPillager implements IBot {
                                             }
                                         ]
                                     });
-                                } catch(e) {
+                                } catch (e) {
                                     this.onError(e, context);
                                     console.error(`### Error (waging war on action)`, e);
                                 }
@@ -256,19 +256,19 @@ export class PowerPillager implements IBot {
                 }
             }
         };
-   }
+    }
 
-   /**
-    * Wage war
-    * 
-    * @param context Teams context
-    * @param data attacker and defender emails
-    */
-   private async wageWar(data: { attacker: string, defender: string }) {
+    /**
+        * Wage war
+        * 
+        * @param context Teams context
+        * @param data attacker and defender emails
+        */
+    private async wageWar(data: { attacker: string, defender: string }) {
         await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defending=${data.defender}`);
-   }
+    }
 
-   private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
+    private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
         const activityMembers: TeamsChannelAccount[] = await adapter.getActivityMembers(context);
         let conversationMembers: TeamsChannelAccount[] = [];
         if (!activityMembers) {
@@ -281,7 +281,7 @@ export class PowerPillager implements IBot {
         }
 
         return null;
-   }
+    }
 
     /**
      * Capitalize start character of every word in string.
@@ -306,14 +306,13 @@ export class PowerPillager implements IBot {
         try {
             const response = await fetch(
                 'https://pillagers-storage-functions.azurewebsites.net/api/GetKings',
-                { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
-            console.log('¤¤¤¤¤¤¤ get kings repsonse', response);
             const json = await (response as any).json();
             if (json) {
                 return json.value;
             }
-        } catch(e) {
+        } catch (e) {
             console.error('### Error (getKings())', e);
             this.onError(e, context);
             return [];
@@ -322,8 +321,7 @@ export class PowerPillager implements IBot {
         return [];
     }
 
-   public async onTurn(context: TurnContext): Promise<any> {
-       console.log('### activity type', context.activity.type);
+    public async onTurn(context: TurnContext): Promise<any> {
         await this.activityProc.processIncomingActivity(context);
     }
 
