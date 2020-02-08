@@ -257,11 +257,18 @@ export class PowerPillager implements IBot {
         };
    }
 
+   /**
+    * Wage war
+    * 
+    * @param context Teams context
+    * @param data attacker and defender emails
+    */
    private async wageWar(context: TurnContext, data: { attacker: string, defender: string }) {
         const response = await fetch(
-            `https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defender=${data.defender}`
+            `https://pillagers-storage-functions.azurewebsites.net/api/WageWar?attacking=${data.attacker}&defending=${data.defender}`,
+            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
         );
-        const json = (response as any).json();
+        const json = await (response as any).json();
 
         console.log(`### json feedback wageWar`, json);
    }
