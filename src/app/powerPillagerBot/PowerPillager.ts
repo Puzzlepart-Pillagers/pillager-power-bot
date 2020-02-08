@@ -61,9 +61,21 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                { type: 'Image', url: 'https://www.epsilontheory.com/wp-content/uploads/epsilon-theory-one-million-dollars-september-15-2015-austin-powers.jpg' },
-                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
+                                                {
+                                                    type: 'ColumnSet',
+                                                    columns: [
+                                                        {
+                                                            type: 'Column', width: 'stretch', items: [
+                                                                { type: 'TextBlock', text: `${king.FirstName} ${king.LastName}` }
+                                                            ]
+                                                        },
+                                                        {
+                                                            type: 'Column', width: 'stretch', items: [
+                                                                { type: 'TextBlock', text: `${king.FirstName} ${king.LastName}` }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
                                             ],
                                             actions: [
                                                 { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email, test: 'test' } }
@@ -86,6 +98,31 @@ export class PowerPillager implements IBot {
                     const dc = await this.dialogs.createContext(context);
                     await dc.beginDialog("help");
                     return;
+                }
+                case 'wagewar': {
+                    const kings = [ 'king 1', 'king 2', 'king 3', 'king 4', 'king 5' ];
+                    
+                    const actions = kings.map((item) => {
+                        return { type: 'Action.Submit', title: item, data: { warKings: item } };
+                    });
+
+                    await context.sendActivity({
+                        type: 'message',
+                        attachments: [
+                            {
+                                contentType: 'application/vnd.microsoft.card.adaptive',
+                                content: {
+                                    type: 'AdaptiveCard',
+                                    version: '1.0',
+                                    body: [
+                                        { type: 'TextBox', text: `${sender.email}, who do you want to wage war on?` },
+                                        { type: 'TextBox', text: `Enemy kings:` }
+                                    ],
+                                    actions
+                                }
+                            }
+                        ]
+                    });
                 }
             }
         } else {
@@ -142,6 +179,15 @@ export class PowerPillager implements IBot {
                                 } else {
                                     console.error('### Error - missing monies');
                                     this.errorFeedback(new Error('Cannot find both sources of pennings'), context);
+                                }
+                            }
+                            if (context.activity.value.warKings) {
+                                const warTarget: string = context.activity.value.warKings;
+                                try {
+                                    await context.sendActivity(`Waging war on ${warTarget}`);
+                                } catch(e) {
+                                    this.errorFeedback(e, context);
+                                    console.error(`### Error (waging war on action)`, e);
                                 }
                             }
                         }
