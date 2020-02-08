@@ -122,22 +122,18 @@ export class PowerPillager implements IBot {
                                 teamsContext.getActivityTextWithoutMentions().toLowerCase() : 
                                 context.activity.text
                         ) : context.activity.text;
-                        console.log('### text', text);
                         if (text) {
                             await this.messageHandler(text, context, sender);
                         }
                     case ActivityTypes.Invoke: {
-                        console.log('============= INVOKE ==============');
-                        if (context.activity && context.activity.value[0]) {
-                            console.log('### context.activity.value', context.activity.value);
-                            const email = sender.email.toLowerCase();
-                            const response = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
-                            const json = await (response as any).json();
-                            const currentPenning = json.value[0].Penning ? json.value.Penning : 0;
-                            const addedPenning = context.activity.value.addMoney ? context.activity.value.addMoney : 0;
-                            console.log('### json.value.Penning', json.value.Penning);
+                        if (context.activity && context.activity.value && context.activity.value.addMoney) {
+                            const email: string = sender.email.toLowerCase();
+                            const response: any = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
+                            const json: any = await (response as any).json();
                             console.log('### json', json);
-                            console.log('### request', `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`);
+                            const currentPenning: number = json.value[0].Penning ? (json.value.Penning as number) : 0;
+                            const addedPenning: number = context.activity.value.addMoney ? (context.activity.value.addMoney as number) : 0;
+                            console.log('### monies ---> currentPenning:', currentPenning, ', addedPenning:', addedPenning);
                             if (json.value !== [] && currentPenning && addedPenning) {
                                 const totalPennings: number = currentPenning + addedPenning;
                                 console.log('### total monies', totalPennings);
