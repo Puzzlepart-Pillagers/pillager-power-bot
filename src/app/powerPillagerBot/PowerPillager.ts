@@ -54,12 +54,6 @@ export class PowerPillager implements IBot {
                             const king = kings.value[0];
                             await context.sendActivity({
                                 type: 'message',
-                                value: {
-                                    user: king.Email
-                                },
-                                channelData: {
-                                    user: king.Email
-                                },
                                 attachments: [
                                     {
                                         contentType: 'application/vnd.microsoft.card.adaptive',
@@ -72,7 +66,7 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
                                             ],
                                             actions: [
-                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000 } }
+                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email } }
                                             ]
                                         }
                                     }
@@ -131,9 +125,9 @@ export class PowerPillager implements IBot {
                             console.log(context.activity.value);
                             console.log('===============');
                             if (context.activity.value.addMoney) {
-                                const email: string = sender.email.toLowerCase();
+                                const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLocaleLowerCase();
                                 const get: any = await fetch(
-                                    `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`,
+                                    `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${king}`,
                                     { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
                                 );
                                 const json: any = await get.json();
