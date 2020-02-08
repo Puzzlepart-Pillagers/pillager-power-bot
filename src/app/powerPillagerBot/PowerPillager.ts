@@ -130,15 +130,18 @@ export class PowerPillager implements IBot {
                             const email: string = sender.email.toLowerCase();
                             const response: any = await fetch(`https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${email}`, { method: 'GET',  headers: { 'Content-Type': 'application/json' } });
                             const json: any = response.json();
-                            const money = json.value && json.value.length > 0 ? { current: (json.value[0].Panning as number), add: (context.activity.value.addMoney as number) } : {};
-                            console.log('### monies ---> currentPenning:', money.current, ', addedPenning:', money.add);
-                            if (money.add && money.current) {
-                                const totalPennings: number = money.add + money.current;
+                            const currentPennings = json.value && json.value[0];
+                            const addedPennings = context.activity.value.addMoney;
+                            console.log('current', currentPennings, 'added', addedPennings);
+                            if (currentPennings && addedPennings) {
+                                const totalPennings: number = addedPennings + currentPennings;
                                 console.log('### total monies', totalPennings);
                                 await fetch(
                                     'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning', 
                                     { method: 'POST', body: { email: sender.email, Penning: totalPennings }, headers: { 'Content-Type': 'application/json' } }
                                 );
+                            } else {
+                                console.log('### missing monies');
                             }
                         }
                     }
