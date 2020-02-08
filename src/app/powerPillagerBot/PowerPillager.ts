@@ -52,6 +52,7 @@ export class PowerPillager implements IBot {
                     if (kings.value[0]) {
                         try {
                             const king = kings.value[0];
+                            const kingName: string = this.capitalixeWords(`${king.FirstName} ${king.LastName}`);
                             await context.sendActivity({
                                 type: 'message',
                                 attachments: [
@@ -61,13 +62,13 @@ export class PowerPillager implements IBot {
                                             type: 'AdaptiveCard',
                                             version: '1.0',
                                             body: [
-                                                { type: 'Image', url: 'https://www.epsilontheory.com/wp-content/uploads/epsilon-theory-one-million-dollars-september-15-2015-austin-powers.jpg' },
-                                                { type: 'TextBlock', text: `name: ${king.FirstName} ${king.LastName}` },
-                                                { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
+                                                { type: 'TextBlock', text: `King Stats for ${king.email}`, size: "Large", weight: 'Bolder' },
+                                                { type: 'TextBlock', text: `Name: ${kingName}`, size: 'Small' },
+                                                { type: 'TextBlock', text: `Pennings: ${king.Penning}`, size: 'Small' },
+                                                { type: 'TextBlock', text: `Latitude: ${king.lat}`, size: 'Small' },
+                                                { type: 'TextBlock', text: `Longitude: ${king.lon}`, size: 'Small' }
                                             ],
-                                            actions: [
-                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email } }
-                                            ]
+                                            actions: [{ type: 'Action.Submit', title: 'Cheat (get 1 billion pennings)', data: { addMoney: 1000000000, king: king.email } }]
                                         }
                                     }
                                 ]
@@ -134,6 +135,26 @@ export class PowerPillager implements IBot {
         }
     }
 
+    /**
+     * Capitalize start character of every word in string.
+     * Used for name capitalization
+     * 
+     * @param str String to capitalize
+     */
+    private capitalixeWords(str: string): string {
+        let words: string[] = str.toLowerCase().split(' ');
+        for (let i = 0; i < words.length; i++) {
+            words[i] = `${words[i].charAt(0).toUpperCase()}${words[i].substring(1)}`
+        }
+        return words.join(' ');
+    }
+
+    /**
+     * Send back feedback to user
+     * 
+     * @param error Error
+     * @param context Teams context
+     */
     private async errorFeedback(error: Error, context: TurnContext): Promise<void> {
         await context.sendActivity(`Something went wrong: ${error}`);
     }
@@ -145,8 +166,10 @@ export class PowerPillager implements IBot {
         this.dialogs.add(new HelpDialog("help"));
 
         this.activityProc.messageActivityHandler = {
-            onMessage: async (context: TurnContext): Promise<void> => { // NOTE Incoming messages
-                const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams
+            onMessage: async (context: TurnContext): Promise<void> => {
+                console.log('============== [  ] =============');
+
+                const teamsContext: TeamsContext = TeamsContext.from(context); // NOTE will be undefined outside of teams, missing teams context
                 const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
                 switch (context.activity.type) {
@@ -204,6 +227,8 @@ export class PowerPillager implements IBot {
                                     this.errorFeedback(e, context);
                                     console.error(`### Error (waging war on action)`, e);
                                 }
+
+                                // TODO logic for waging war
                             }
                         }
                     }
