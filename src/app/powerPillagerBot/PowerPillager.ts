@@ -66,7 +66,7 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: `monies: ${king.Penning} Pennings`, size: 'Small' },
                                             ],
                                             actions: [
-                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email } }
+                                                { type: 'Action.Submit', title: 'Get Free 1 Billion Pennings', data: { addMoney: 1000000000, king: king.Email, test: 'test' } }
                                             ]
                                         }
                                     }
@@ -121,9 +121,9 @@ export class PowerPillager implements IBot {
                         }
                     case ActivityTypes.Invoke: {
                         if (context.activity.value) {
-                            console.log('===============');
+                            console.log('==============================');
                             console.log(context.activity.value);
-                            console.log('===============');
+                            console.log('==============================');
                             if (context.activity.value.addMoney) {
                                 const king: string = context.activity.value.king ? context.activity.value.king : sender.email.toLocaleLowerCase();
                                 const get: any = await fetch(
