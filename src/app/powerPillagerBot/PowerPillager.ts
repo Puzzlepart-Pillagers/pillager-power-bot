@@ -68,7 +68,7 @@ export class PowerPillager implements IBot {
                                                 { type: 'TextBlock', text: `Latitude: ${king.lat}`, size: 'Small' },
                                                 { type: 'TextBlock', text: `Longitude: ${king.lon}`, size: 'Small' }
                                             ],
-                                            actions: [{ type: 'Action.Submit', title: 'Cheat (get 1 billion pennings)', data: { addMoney: 1000000000, king: king.email } }]
+                                            actions: [{ type: 'Action.Submit', title: 'Cheat - Add Pennings', data: { addMoney: 1000000000, king: king.email } }]
                                         }
                                     }
                                 ]
@@ -93,8 +93,12 @@ export class PowerPillager implements IBot {
                     const senderKingEmail: string = sender.email.toLowerCase();
 
                     // TODO fetch from get all kings
-
-                    const kings: any[] = (await this.getKings(context)).map((king: any) => { return { name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), email: king.email } });
+                    const kings: any[] = (await this.getKings(context)).map((king: any) => { 
+                        return { 
+                            name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), 
+                            email: king.email 
+                        }
+                    });
 
                     const actions = kings.map((item) => {
                         return { 
@@ -166,11 +170,8 @@ export class PowerPillager implements IBot {
                 const teamsContext: TeamsContext = TeamsContext.from(context);
                 const sender: TeamsChannelAccount = await this.getSenderInformation((context.adapter as TeamsAdapter), context);
 
-                console.log(`### Activity type inside: ${context.activity.type}`);
-
                 switch (context.activity.type) {
                     case ActivityTypes.Message:
-                        console.log(`### Activity type inside inside: ${context.activity.type}`);
                         let text: string = teamsContext ? (
                             teamsContext.getActivityTextWithoutMentions() ? 
                                 teamsContext.getActivityTextWithoutMentions().toLowerCase() : 
@@ -288,16 +289,26 @@ export class PowerPillager implements IBot {
     private async getKings(context: TurnContext): Promise<any[]> {
         try {
             const response = fetch(
-                'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
+                'https://pillagers-storage-functions.azurewebsites.net/api/GetKings',
                 { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
             );
-            const json = await response.json();
+            console.log('¤¤¤¤¤¤¤ get kings repsonse', response);
+            const json = await (response as any).json();
             if (json) {
                 return json.value;
             }
+
+            /*
+                const get: any = await fetch(
+                    `https://pillagers-storage-functions.azurewebsites.net/api/GetKing?email=${king}`,
+                    { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+                );
+                const json: any = await get.json();
+            */
         } catch(e) {
             console.error('### Error (getKings())', e);
             this.onError(e, context);
+            return [];
         }
 
         return [];
