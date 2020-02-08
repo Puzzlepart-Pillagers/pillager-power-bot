@@ -45,7 +45,7 @@ export class PowerPillager implements IBot {
                         );
                         kings = await (response as any).json();
                     } catch(e) {
-                        this.errorFeedback(e, context);
+                        this.onError(e, context);
                         console.error('### error (fetch azure):', e);
                     }
 
@@ -74,7 +74,7 @@ export class PowerPillager implements IBot {
                                 ]
                             });
                         } catch(e) {
-                            this.errorFeedback(e, context);
+                            this.onError(e, context);
                             console.error('### error (adaptiveCard):', e);
                         }
                     } else {
@@ -94,7 +94,7 @@ export class PowerPillager implements IBot {
 
                     // TODO fetch from get all kings
 
-                    const kings: any[] = (await this.getKings()).map((king: any) => { return { name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), email: king.email } });
+                    const kings: any[] = (await this.getKings(context)).map((king: any) => { return { name: this.capitalizeWords(`${king.FirstName} ${king.LastName}`), email: king.email } });
 
                     const actions = kings.map((item) => {
                         return { 
@@ -110,24 +110,29 @@ export class PowerPillager implements IBot {
                     let json = await (response as any).json();
                     if (json.value) {
                         const senderKing = json.value[0];
-                        await context.sendActivity({
-                            type: 'message',
-                            attachments: [
-                                {
-                                    contentType: 'application/vnd.microsoft.card.adaptive',
-                                    content: {
-                                        type: 'AdaptiveCard',
-                                        version: '1.0',
-                                        body: [
-                                            { type: 'TextBlock', text: `Wage War`, size: "Large", color: 'Attention', weight: 'Bolder' },
-                                            { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who would you like to wage war on?` },
-                                            { type: 'TextBlock', text: `Enemy kings:` }
-                                        ],
-                                        actions
+                        try {
+                            await context.sendActivity({
+                                type: 'message',
+                                attachments: [
+                                    {
+                                        contentType: 'application/vnd.microsoft.card.adaptive',
+                                        content: {
+                                            type: 'AdaptiveCard',
+                                            version: '1.0',
+                                            body: [
+                                                { type: 'TextBlock', text: `Wage War`, size: "Large", color: 'Attention', weight: 'Bolder' },
+                                                { type: 'TextBlock', text: `${senderKing.FirstName} ${senderKing.LastName}, who would you like to wage war on?` },
+                                                { type: 'TextBlock', text: `Enemy kings:` }
+                                            ],
+                                            actions
+                                        }
                                     }
-                                }
-                            ]
-                        });
+                                ]
+                            });
+                        } catch(e) {
+                            this.onError(e, context);
+                            console.error('### Error (sendActivity senderKing stuff)', e);
+                        }
                     } else {
                         await context.sendActivity(`${senderKingEmail} is not a valid king.`);
                     }
@@ -146,8 +151,8 @@ export class PowerPillager implements IBot {
      * @param error Error
      * @param context Teams context
      */
-    private async errorFeedback(error: Error, context: TurnContext): Promise<void> {
-        //await context.sendActivity(`Something went wrong: ${error}`);
+    private async onError(error: Error, context: TurnContext): Promise<void> {
+        await context.sendActivity(`Something went wrong: ${error}`);
     }
 
     public constructor(conversationState: ConversationState) {
@@ -193,7 +198,7 @@ export class PowerPillager implements IBot {
                                     );
                                 } else {
                                     console.error('### Error - missing monies');
-                                    this.errorFeedback(new Error('Cannot find both sources of pennings'), context);
+                                    this.onError(new Error('Cannot find both sources of pennings'), context);
                                 }
                             }
                             if (context.activity.value.targetKingName) {
@@ -216,7 +221,7 @@ export class PowerPillager implements IBot {
                                         ]
                                     });
                                 } catch(e) {
-                                    this.errorFeedback(e, context);
+                                    this.onError(e, context);
                                     console.error(`### Error (waging war on action)`, e);
                                 }
 
@@ -280,14 +285,19 @@ export class PowerPillager implements IBot {
      * 
      * @returns Array of kings or an empty array
      */
-    private async getKings(): Promise<any[]> {
-        const response = fetch(
-            'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
-            { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
-        );
-        const json = await response.json();
-        if (json) {
-            return json.value;
+    private async getKings(context: TurnContext): Promise<any[]> {
+        try {
+            const response = fetch(
+                'https://pillagers-storage-functions.azurewebsites.net/api/GetKings', 
+                { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
+            );
+            const json = await response.json();
+            if (json) {
+                return json.value;
+            }
+        } catch(e) {
+            console.error('### Error (getKings())', e);
+            this.onError(e, context);
         }
 
         return [];
