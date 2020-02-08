@@ -91,9 +91,9 @@ export class PowerPillager implements IBot {
                 case 'wagewar': {
                     const senderKingEmail: string = sender.email.toLowerCase();
 
-                    const kings: any[] = [ { name: 'Reidar Olafsson', email: 'tonnes@pzl.onmicrosoft.com' }, 'Erik Thorsson', 'Teit Olafsson' ];
+                    const kings: any[] = [ { name: 'Reidar Olafsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Erik Thorsson', email: 'fake@pzl.onmicrosoft.com' }, { name: 'Teit Olafsson', email: 'fake@pzl.onmicrosoft.com' } ];
                     const actions = kings.map((item) => {
-                        return { type: 'Action.Submit', title: item.name, data: { warKings: item.email } };
+                        return { type: 'Action.Submit', title: item.name, data: { targetKingEmail: item.email, targetKingName: item.name } };
                     });
 
                     const response = await fetch(
@@ -179,10 +179,11 @@ export class PowerPillager implements IBot {
                                     this.errorFeedback(new Error('Cannot find both sources of pennings'), context);
                                 }
                             }
-                            if (context.activity.value.warKings) {
-                                const warTarget: string = context.activity.value.warKings;
+                            if (context.activity.value.targetKingName) {
+                                const targetKingEmail: string = context.activity.value.targetKingEmail;
+                                const targetKingName: string = context.activity.value.targetKingName;
                                 try {
-                                    await context.sendActivity(`Waging war on ${warTarget}`);
+                                    await context.sendActivity(`Waging war on ${targetKingName}`);
                                 } catch(e) {
                                     this.errorFeedback(e, context);
                                     console.error(`### Error (waging war on action)`, e);
