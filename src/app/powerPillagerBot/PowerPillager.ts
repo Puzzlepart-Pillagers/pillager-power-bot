@@ -231,7 +231,7 @@ export class PowerPillager implements IBot {
                                     console.error(`### Error (waging war on action)`, e);
                                 }
 
-                                await this.wageWar(context, { attacker: sender.email.toLowerCase(), defender: targetKingEmail });
+                                await this.wageWar({ attacker: sender.email.toLowerCase(), defender: targetKingEmail });
                             }
                         }
                     }
@@ -268,18 +268,18 @@ export class PowerPillager implements IBot {
    }
 
    private async getSenderInformation(adapter: TeamsAdapter, context: TurnContext): Promise<TeamsChannelAccount> {
-       const activityMembers: TeamsChannelAccount[] = await adapter.getActivityMembers(context);
-       let conversationMembers: TeamsChannelAccount[] = [];
-       if (!activityMembers) {
-        conversationMembers = await adapter.getConversationMembers(context);
-       }
+        const activityMembers: TeamsChannelAccount[] = await adapter.getActivityMembers(context);
+        let conversationMembers: TeamsChannelAccount[] = [];
+        if (!activityMembers) {
+            conversationMembers = await adapter.getConversationMembers(context);
+        }
 
-       const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
-       if (members[0]) {
-        return members[0] as TeamsChannelAccount;
-       }
+        const members: TeamsChannelAccount[] = activityMembers ? activityMembers : conversationMembers;
+        if (members[0]) {
+            return members[0] as TeamsChannelAccount;
+        }
 
-       return null;
+        return null;
    }
 
     /**
