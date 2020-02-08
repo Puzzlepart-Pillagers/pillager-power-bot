@@ -127,7 +127,9 @@ export class PowerPillager implements IBot {
                         }
                     case ActivityTypes.Invoke: {
                         if (context.activity.value) {
-                            console.log(`### values ${context.activity.value}`);
+                            console.log('===============');
+                            console.log(context.activity.value);
+                            console.log('===============');
                             if (context.activity.value.addMoney) {
                                 const email: string = sender.email.toLowerCase();
                                 const get: any = await fetch(
@@ -135,21 +137,17 @@ export class PowerPillager implements IBot {
                                     { method: 'GET',  headers: { 'Content-Type': 'application/json' } }
                                 );
                                 const json: any = await get.json();
-                                const currentPennings = json.value[0].Penning;
-                                const addedPennings = context.activity.value.addMoney;
+                                const currentPennings: number = parseFloat(json.value[0].Penning);
+                                const addedPennings: number = parseFloat(context.activity.value.addMoney);
                                 if (currentPennings && addedPennings) {
                                     const Penning: number = addedPennings + currentPennings;
-                                    console.log(`#### current: ${currentPennings}, added: ${addedPennings}`);
-                                    console.log('### total money =', Penning, ', email', email);
-                                    const body = { email, Penning };
-                                    console.log(body);
-                                    const post = await fetch(
+                                    await fetch(
                                         'https://pillagers-storage-functions.azurewebsites.net/api/SetPenning',
-                                        { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' }}
+                                        { method: 'POST', body: JSON.stringify({ email, Penning }), headers: { 'Content-Type': 'application/json' }}
                                     );
-                                    console.log(post);
                                 } else {
-                                    console.log('### missing monies');
+                                    console.error('### Error - missing monies');
+                                    this.errorFeedback(new Error('Cannot find both sources of pennings'), context);
                                 }
                             }
                         }
